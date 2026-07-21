@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* dark: now follows the .dark class (set by Control Center); "Auto" mode
+   mirrors the OS preference onto the class via JS */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
