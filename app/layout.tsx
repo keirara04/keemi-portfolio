@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Hakeemi Ridza — Software Engineer & AI Builder",
+  title: "hakeemiridza — Software Engineer & Full Stack Developer",
   description:
     "Computer Science student at Korea University building full-stack apps and AI/LLM-powered products. Open for freelance work.",
 };

@@ -5,10 +5,17 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
+
+// useLayoutEffect runs synchronously before paint (useEffect runs after), so
+// the mobile check below resolves before the browser ever paints the
+// desktop-only account-login screen on a phone. Falls back to useEffect
+// during SSR, where layout effects are unsupported and would just warn.
+const useIsomorphicLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 export type WindowId = string;
 
@@ -21,6 +28,8 @@ export type WindowConfig = {
   defaultPosition: WindowPosition;
   defaultSize: WindowSize;
   minSize?: WindowSize;
+  /** Open centered in the viewport instead of at defaultPosition (desktop only). */
+  centered?: boolean;
 };
 
 export type WindowState = WindowConfig & {
@@ -56,13 +65,22 @@ export const WindowManagerContext = createContext<WindowManagerContextValue | nu
 
 const BASE_Z_INDEX = 10;
 const MOBILE_BREAKPOINT_QUERY = "(max-width: 768px)";
+const MENU_BAR_HEIGHT = 32;
+
+function centeredPosition(size: WindowSize): WindowPosition {
+  if (typeof window === "undefined") return { x: 80, y: 72 };
+  return {
+    x: Math.max(20, (window.innerWidth - size.width) / 2),
+    y: Math.max(MENU_BAR_HEIGHT + 12, (window.innerHeight - size.height) / 2),
+  };
+}
 
 export function WindowManagerProvider({ children }: { children: React.ReactNode }) {
   const [windows, setWindows] = useState<Record<WindowId, WindowState>>({});
   const [isMobile, setIsMobile] = useState(false);
   const zCounter = useRef(BASE_Z_INDEX);
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const mediaQuery = window.matchMedia(MOBILE_BREAKPOINT_QUERY);
     const update = () => setIsMobile(mediaQuery.matches);
     update();
@@ -120,7 +138,7 @@ export function WindowManagerProvider({ children }: { children: React.ReactNode 
             isOpen: true,
             isMinimized: false,
             isMaximized: false,
-            position: config.defaultPosition,
+            position: config.centered ? centeredPosition(config.defaultSize) : config.defaultPosition,
             size: config.defaultSize,
             zIndex: nextZIndex(),
           },

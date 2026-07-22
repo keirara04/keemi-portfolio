@@ -121,6 +121,34 @@ export function NotesAppIcon({ className }: { className?: string }) {
   );
 }
 
+export function HomeworkAppIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 100 100" aria-hidden className={className}>
+      <defs>
+        <linearGradient id="homework-bg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#fbbf24" />
+          <stop offset="1" stopColor="#d97706" />
+        </linearGradient>
+      </defs>
+      <rect width="100" height="100" rx="22" fill="url(#homework-bg)" />
+      <path
+        d="M18 34 Q18 28 24 28 H40 L46 34 H82 Q88 34 88 40 V70 Q88 76 82 76 H24 Q18 76 18 70 Z"
+        fill="#ffffff"
+      />
+      <path d="M18 42 H88 V70 Q88 76 82 76 H24 Q18 76 18 70 Z" fill="#fde68a" opacity="0.6" />
+    </svg>
+  );
+}
+
+export function HomeIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden className={className}>
+      <path d="M2 7.5 L8 2.5 L14 7.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M4 6.5 V13 H12 V6.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 export function ControlCenterIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden className={className}>
@@ -189,6 +217,60 @@ export function ResumeAppIcon({ className }: { className?: string }) {
   );
 }
 
+export function MinesweeperAppIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 100 100" aria-hidden className={className}>
+      <defs>
+        <linearGradient id="mines-bg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#a3e635" />
+          <stop offset="1" stopColor="#16a34a" />
+        </linearGradient>
+      </defs>
+      <rect width="100" height="100" rx="22" fill="url(#mines-bg)" />
+      <g fill="#ffffff" opacity="0.35">
+        <rect x="14" y="14" width="24" height="24" rx="4" />
+        <rect x="62" y="14" width="24" height="24" rx="4" />
+        <rect x="38" y="38" width="24" height="24" rx="4" />
+        <rect x="14" y="62" width="24" height="24" rx="4" />
+        <rect x="62" y="62" width="24" height="24" rx="4" />
+      </g>
+      <circle cx="50" cy="50" r="13" fill="#18181b" />
+      <g stroke="#18181b" strokeWidth="4" strokeLinecap="round">
+        <line x1="50" y1="30" x2="50" y2="70" />
+        <line x1="30" y1="50" x2="70" y2="50" />
+        <line x1="36" y1="36" x2="64" y2="64" />
+        <line x1="64" y1="36" x2="36" y2="64" />
+      </g>
+      <circle cx="45" cy="45" r="3.5" fill="#ffffff" />
+    </svg>
+  );
+}
+
+export function QuoteAppIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 100 100" aria-hidden className={className}>
+      <defs>
+        <linearGradient id="quote-bg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#34d399" />
+          <stop offset="1" stopColor="#059669" />
+        </linearGradient>
+      </defs>
+      <rect width="100" height="100" rx="22" fill="url(#quote-bg)" />
+      <text
+        x="50"
+        y="67"
+        textAnchor="middle"
+        fontSize="48"
+        fontWeight="700"
+        fill="#ffffff"
+        fontFamily="inherit"
+      >
+        $
+      </text>
+    </svg>
+  );
+}
+
 export function ChevronLeftIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 10 16" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden className={className}>
@@ -202,6 +284,22 @@ export function MagnifierIcon({ className }: { className?: string }) {
     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden className={className}>
       <circle cx="6.5" cy="6.5" r="4.5" />
       <path d="M10 10 L14 14" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function AboutAppIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 100 100" aria-hidden className={className}>
+      <defs>
+        <linearGradient id="about-bg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#a78bfa" />
+          <stop offset="1" stopColor="#7c3aed" />
+        </linearGradient>
+      </defs>
+      <rect width="100" height="100" rx="22" fill="url(#about-bg)" />
+      <circle cx="50" cy="38" r="16" fill="#ffffff" />
+      <path d="M18 88a32 32 0 0 1 64 0Z" fill="#ffffff" />
     </svg>
   );
 }

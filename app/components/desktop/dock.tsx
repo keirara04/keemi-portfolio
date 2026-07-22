@@ -12,12 +12,14 @@ import { profile } from "@/lib/content";
 import { dockApps, windowConfigById } from "./window-registry";
 import { useWindowManager } from "./window-manager-context";
 import {
+  AboutAppIcon,
   FinderFaceIcon,
   GitHubIcon,
   LinkedInIcon,
   MailAppIcon,
+  MinesweeperAppIcon,
   NotesAppIcon,
-  ProfileTileIcon,
+  QuoteAppIcon,
   TerminalAppIcon,
 } from "./icons";
 
@@ -27,7 +29,7 @@ const MAGNIFY_RADIUS = 140;
 
 function DockAppIcon({ windowId }: { windowId: string }) {
   if (windowId === "about") {
-    return <ProfileTileIcon className="h-full w-full rounded-[22%]" />;
+    return <AboutAppIcon className="h-full w-full" />;
   }
   if (windowId === "projects") {
     return <FinderFaceIcon className="h-full w-full" />;
@@ -37,6 +39,12 @@ function DockAppIcon({ windowId }: { windowId: string }) {
   }
   if (windowId === "notes") {
     return <NotesAppIcon className="h-full w-full" />;
+  }
+  if (windowId === "minesweeper") {
+    return <MinesweeperAppIcon className="h-full w-full" />;
+  }
+  if (windowId === "quote") {
+    return <QuoteAppIcon className="h-full w-full" />;
   }
   if (windowId === "contact") {
     return <MailAppIcon className="h-full w-full" />;
@@ -101,7 +109,7 @@ function DockItem({
 }
 
 export function Dock() {
-  const { windows, openWindow, focusWindow, isMobile } = useWindowManager();
+  const { windows, openWindow, isMobile } = useWindowManager();
   const mouseX = useMotionValue(Infinity);
 
   if (isMobile) return null;
@@ -123,15 +131,8 @@ export function Dock() {
               label={app.label}
               dockId={app.windowId}
               isActive={isOpen && !win?.isMinimized}
-              onClick={(origin) => {
-                // openWindow also restores a minimized window; focus alone would
-                // leave it hidden
-                if (isOpen && !win?.isMinimized) {
-                  focusWindow(app.windowId);
-                } else {
-                  openWindow(windowConfigById[app.windowId], origin);
-                }
-              }}
+              // openWindow already restores/focuses an existing window (minimized or not)
+              onClick={(origin) => openWindow(windowConfigById[app.windowId], origin)}
             >
               <DockAppIcon windowId={app.windowId} />
             </DockItem>

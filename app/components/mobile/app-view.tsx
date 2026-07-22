@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { ChevronLeftIcon } from "../desktop/icons";
+import { ChevronLeftIcon, HomeIcon } from "../desktop/icons";
 import { WindowContentFor } from "../desktop/window-content";
 import { StatusBar } from "./status-bar";
 import type { LaunchOrigin } from "./home-screen";
@@ -82,19 +82,20 @@ export function AppView({
         <p className="absolute left-1/2 -translate-x-1/2 text-sm font-semibold text-zinc-900 dark:text-white">
           {title}
         </p>
+        {canGoBack ? (
+          <button
+            onClick={onHome}
+            aria-label="Home"
+            className="ml-auto flex items-center rounded-md p-1.5 text-sky-600 dark:text-sky-400"
+          >
+            <HomeIcon className="h-4 w-4" />
+          </button>
+        ) : null}
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto p-4 pb-10">
+      <div className="min-h-0 flex-1 overflow-y-auto p-4">
         <WindowContentFor id={id} />
       </div>
-
-      <button
-        onClick={onHome}
-        aria-label="Go to home screen"
-        className="absolute inset-x-0 bottom-0 flex h-8 items-end justify-center pb-2"
-      >
-        <span className="h-1 w-32 rounded-full bg-zinc-900/80 dark:bg-white/80" />
-      </button>
     </motion.div>
   );
 }

@@ -5,8 +5,9 @@ import { interests, profile, projects, skillGroups } from "@/lib/content";
 import { useWindowManager } from "../window-manager-context";
 import {
   contactWindowConfig,
+  minesweeperWindowConfig,
   projectWindowConfig,
-  projectWindowId,
+  quoteWindowConfig,
 } from "../window-registry";
 
 type TerminalLine = { kind: "input" | "output"; text: string };
@@ -23,14 +24,16 @@ const HELP_TEXT = [
   "  projects          list projects",
   "  open <project>    open a project window (e.g. open shelterlab)",
   "  contact           open the contact window",
+  "  quote             get a ballpark project estimate",
   "  github            open GitHub profile",
   "  linkedin          open LinkedIn profile",
   "  build             build a project",
+  "  minesweeper       take a break",
   "  clear             clear the terminal",
 ];
 
 export function TerminalWindowContent() {
-  const { openWindow, focusWindow, windows } = useWindowManager();
+  const { openWindow } = useWindowManager();
   const [lines, setLines] = useState<TerminalLine[]>(WELCOME);
   const [input, setInput] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -40,13 +43,8 @@ export function TerminalWindowContent() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
   }, [lines]);
 
-  const openOrFocus = (id: string, config: Parameters<typeof openWindow>[0]) => {
-    const win = windows[id];
-    if (win?.isOpen && !win.isMinimized) {
-      focusWindow(id);
-    } else {
-      openWindow(config);
-    }
+  const openOrFocus = (config: Parameters<typeof openWindow>[0]) => {
+    openWindow(config);
   };
 
   const run = (raw: string): string[] => {
@@ -73,15 +71,44 @@ export function TerminalWindowContent() {
           return [`open: project not found: ${args.join(" ") || "(none)"}`, `Try "projects" to list them.`];
         }
         const project = projects[index];
-        openOrFocus(projectWindowId(project.id), projectWindowConfig(project.id, index));
+        openOrFocus(projectWindowConfig(project.id, index));
         return [`Opening ${project.name}…`];
       }
       case "contact":
       case "build":
-        openOrFocus(contactWindowConfig.id, contactWindowConfig);
+        openOrFocus(contactWindowConfig);
         return cmd.toLowerCase() === "build"
           ? ["Excellent choice. Opening Mail…"]
           : ["Opening Mail…"];
+      case "minesweeper":
+        openOrFocus(minesweeperWindowConfig);
+        return ["Sweeping mines. Watch your step."];
+      case "quote":
+        openOrFocus(quoteWindowConfig);
+        return ["Opening the quote calculator…"];
+      case "screensaver":
+        window.dispatchEvent(new CustomEvent("keemi:screensaver"));
+        return ["Enjoy the view. Move the mouse to come back."];
+      case "sudo":
+        return ["keemi is not in the sudoers file.", "This incident will be reported."];
+      case "rm":
+        return ["rm: permission denied. I still need this portfolio, actually."];
+      case "ls":
+        return ["projects/   notes/   resume.pdf   definitely-no-secrets/"];
+      case "konami":
+        return [
+          "You're close. It's not typed here — it's the classic controller code.",
+          "Try it on your keyboard: ↑ ↑ ↓ ↓ ← → ← → B A",
+        ];
+      case "42":
+        return ["The answer to life, the universe, and everything.", "(Still working on the question.)"];
+      case "iddqd":
+        return ["God mode requested. Unfortunately this terminal has none to give."];
+      case "hello":
+      case "hi":
+        return ["Hey! Type \"help\" to see what I can do."];
+      case "exit":
+        return ["There is no escape. (The red light closes the window, though.)"];
       case "github":
         window.open(profile.links.github, "_blank", "noopener,noreferrer");
         return [`Opening ${profile.links.github}…`];

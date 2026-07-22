@@ -1,15 +1,20 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useRef, useSyncExternalStore } from "react";
 import { profile } from "@/lib/content";
 import {
   ABOUT_WINDOW_ID,
   CONTACT_WINDOW_ID,
   PROJECTS_WINDOW_ID,
+  QUOTE_WINDOW_ID,
   windowConfigById,
 } from "./window-registry";
 import { useWindowManager } from "./window-manager-context";
 import { AppleLogo, BatteryIcon, ControlCenterIcon, MagnifierIcon, WifiIcon } from "./icons";
+import { showToast } from "./toast-host";
+
+const APPLE_CLICK_TARGET = 5;
+const APPLE_CLICK_WINDOW_MS = 2500;
 
 // e.g. "Tue Jul 22  12:41 AM" — matches the macOS menu bar clock
 function formatMenuBarClock() {
@@ -36,14 +41,21 @@ export function MenuBar({
   onControlCenter?: () => void;
 }) {
   const time = useClock();
-  const { openWindow, focusWindow, windows } = useWindowManager();
+  const { openWindow } = useWindowManager();
+  const appleClicks = useRef<number[]>([]);
+
+  const handleAppleClick = () => {
+    const now = Date.now();
+    appleClicks.current = [...appleClicks.current, now].filter(
+      (t) => now - t < APPLE_CLICK_WINDOW_MS
+    );
+    if (appleClicks.current.length >= APPLE_CLICK_TARGET) {
+      appleClicks.current = [];
+      showToast("🍎 You found a secret. Nothing here — just a friendly hello.");
+    }
+  };
 
   const goTo = (id: string, e?: React.MouseEvent<HTMLButtonElement>) => {
-    const win = windows[id];
-    if (win?.isOpen && !win.isMinimized) {
-      focusWindow(id);
-      return;
-    }
     const rect = e?.currentTarget.getBoundingClientRect();
     openWindow(
       windowConfigById[id],
@@ -53,7 +65,13 @@ export function MenuBar({
 
   return (
     <div className="fixed inset-x-0 top-0 z-50 flex h-8 items-center gap-4 bg-white/60 px-4 text-[13px] text-black shadow-[0_1px_0_rgba(0,0,0,0.08)] backdrop-blur-2xl dark:bg-black/40 dark:text-white">
-      <AppleLogo className="h-4 w-4 shrink-0" />
+      <button
+        onClick={handleAppleClick}
+        aria-label="Apple menu"
+        className="shrink-0 rounded p-0.5 transition hover:bg-black/10 dark:hover:bg-white/15"
+      >
+        <AppleLogo className="h-4 w-4" />
+      </button>
       <span className="font-bold">{profile.shortName}</span>
 
       <nav className="hidden items-center gap-4 sm:flex">
@@ -79,10 +97,10 @@ export function MenuBar({
 
       <div className="ml-auto flex items-center gap-3.5">
         <button
-          onClick={(e) => goTo(CONTACT_WINDOW_ID, e)}
+          onClick={(e) => goTo(QUOTE_WINDOW_ID, e)}
           className="hidden rounded-full bg-black px-3 py-0.5 text-xs font-semibold text-white transition hover:bg-zinc-700 dark:bg-white dark:text-black dark:hover:bg-zinc-200 sm:inline-block"
         >
-          Hire Me
+          Reach Out
         </button>
         {onControlCenter ? (
           <button

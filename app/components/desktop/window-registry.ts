@@ -6,6 +6,9 @@ export const PROJECTS_WINDOW_ID = "projects";
 export const CONTACT_WINDOW_ID = "contact";
 export const TERMINAL_WINDOW_ID = "terminal";
 export const NOTES_WINDOW_ID = "notes";
+export const MINESWEEPER_WINDOW_ID = "minesweeper";
+export const QUOTE_WINDOW_ID = "quote";
+export const HOMEWORK_WINDOW_ID = "homework";
 export const projectWindowId = (projectId: string) => `project-${projectId}`;
 
 export const aboutWindowConfig: WindowConfig = {
@@ -14,6 +17,7 @@ export const aboutWindowConfig: WindowConfig = {
   defaultPosition: { x: 80, y: 72 },
   defaultSize: { width: 420, height: 460 },
   minSize: { width: 320, height: 360 },
+  centered: true,
 };
 
 export const projectsWindowConfig: WindowConfig = {
@@ -48,6 +52,30 @@ export const notesWindowConfig: WindowConfig = {
   minSize: { width: 420, height: 300 },
 };
 
+export const minesweeperWindowConfig: WindowConfig = {
+  id: MINESWEEPER_WINDOW_ID,
+  title: "Minesweeper",
+  defaultPosition: { x: 460, y: 110 },
+  defaultSize: { width: 360, height: 470 },
+  minSize: { width: 330, height: 420 },
+};
+
+export const quoteWindowConfig: WindowConfig = {
+  id: QUOTE_WINDOW_ID,
+  title: "Get a Quote",
+  defaultPosition: { x: 160, y: 60 },
+  defaultSize: { width: 560, height: 720 },
+  minSize: { width: 400, height: 540 },
+};
+
+export const homeworkWindowConfig: WindowConfig = {
+  id: HOMEWORK_WINDOW_ID,
+  title: "Homework",
+  defaultPosition: { x: 260, y: 150 },
+  defaultSize: { width: 460, height: 400 },
+  minSize: { width: 340, height: 300 },
+};
+
 export function projectWindowConfig(projectId: string, index: number): WindowConfig {
   const project = projects.find((p) => p.id === projectId);
   return {
@@ -65,12 +93,17 @@ export const windowConfigById: Record<string, WindowConfig> = {
   [CONTACT_WINDOW_ID]: contactWindowConfig,
   [TERMINAL_WINDOW_ID]: terminalWindowConfig,
   [NOTES_WINDOW_ID]: notesWindowConfig,
+  [MINESWEEPER_WINDOW_ID]: minesweeperWindowConfig,
+  [QUOTE_WINDOW_ID]: quoteWindowConfig,
+  [HOMEWORK_WINDOW_ID]: homeworkWindowConfig,
 };
 
 export const dockApps = [
   { windowId: ABOUT_WINDOW_ID, label: "About Me" },
   { windowId: PROJECTS_WINDOW_ID, label: "Projects" },
   { windowId: NOTES_WINDOW_ID, label: "Notes" },
+  { windowId: QUOTE_WINDOW_ID, label: "Get a Quote" },
   { windowId: TERMINAL_WINDOW_ID, label: "Terminal" },
+  { windowId: MINESWEEPER_WINDOW_ID, label: "Minesweeper" },
   { windowId: CONTACT_WINDOW_ID, label: "Contact" },
 ];

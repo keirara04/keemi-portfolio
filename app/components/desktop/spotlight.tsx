@@ -4,11 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { profile, projects, skillGroups } from "@/lib/content";
 import { useWindowManager } from "./window-manager-context";
-import {
-  projectWindowConfig,
-  projectWindowId,
-  windowConfigById,
-} from "./window-registry";
+import { projectWindowConfig, windowConfigById } from "./window-registry";
 import { MagnifierIcon } from "./icons";
 
 type SpotlightItem = {
@@ -20,7 +16,7 @@ type SpotlightItem = {
 };
 
 export function Spotlight({ onClose }: { onClose: () => void }) {
-  const { openWindow, focusWindow, windows } = useWindowManager();
+  const { openWindow } = useWindowManager();
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -30,30 +26,29 @@ export function Spotlight({ onClose }: { onClose: () => void }) {
   }, []);
 
   const items = useMemo<SpotlightItem[]>(() => {
-    const openOrFocus = (id: string, config: Parameters<typeof openWindow>[0]) => {
-      const win = windows[id];
-      if (win?.isOpen && !win.isMinimized) {
-        focusWindow(id);
-      } else {
-        openWindow(config);
-      }
+    const openOrFocus = (config: Parameters<typeof openWindow>[0]) => {
+      openWindow(config);
       onClose();
     };
 
-    const windowItems: SpotlightItem[] = Object.values(windowConfigById).map((config) => ({
-      id: `window-${config.id}`,
-      title: config.title,
-      subtitle: "Application",
-      keywords: `${config.id} ${config.title} window app`,
-      action: () => openOrFocus(config.id, config),
-    }));
+    // "quote" and "contact" get their own richer entries below (better
+    // keywords, action-style titles), so skip the generic auto-generated ones.
+    const windowItems: SpotlightItem[] = Object.values(windowConfigById)
+      .filter((config) => config.id !== "quote" && config.id !== "contact")
+      .map((config) => ({
+        id: `window-${config.id}`,
+        title: config.title,
+        subtitle: "Application",
+        keywords: `${config.id} ${config.title} window app`,
+        action: () => openOrFocus(config),
+      }));
 
     const projectItems: SpotlightItem[] = projects.map((project, index) => ({
       id: `project-${project.id}`,
       title: project.name,
       subtitle: `Project — ${project.stack.join(", ")}`,
       keywords: `${project.name} ${project.id} ${project.stack.join(" ")} project`,
-      action: () => openOrFocus(projectWindowId(project.id), projectWindowConfig(project.id, index)),
+      action: () => openOrFocus(projectWindowConfig(project.id, index)),
     }));
 
     const skillItems: SpotlightItem[] = skillGroups.map((group) => ({
@@ -61,7 +56,7 @@ export function Spotlight({ onClose }: { onClose: () => void }) {
       title: group.category,
       subtitle: `Skills — ${group.items.join(", ")}`,
       keywords: `${group.category} ${group.items.join(" ")} skills`,
-      action: () => openOrFocus("about", windowConfigById.about),
+      action: () => openOrFocus(windowConfigById.about),
     }));
 
     const linkItems: SpotlightItem[] = [
@@ -86,16 +81,23 @@ export function Spotlight({ onClose }: { onClose: () => void }) {
         },
       },
       {
-        id: "action-hire",
-        title: "Hire Me",
+        id: "action-contact",
+        title: "Contact",
         subtitle: `Email ${profile.email}`,
-        keywords: "hire contact email freelance work gig",
-        action: () => openOrFocus("contact", windowConfigById.contact),
+        keywords: "contact email mail message reach",
+        action: () => openOrFocus(windowConfigById.contact),
+      },
+      {
+        id: "action-reach-out",
+        title: "Reach Out",
+        subtitle: "Get a ballpark quote for your project",
+        keywords: "hire contact quote quotation reach out estimate price",
+        action: () => openOrFocus(windowConfigById.quote),
       },
     ];
 
     return [...windowItems, ...projectItems, ...skillItems, ...linkItems];
-  }, [windows, openWindow, focusWindow, onClose]);
+  }, [openWindow, onClose]);
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();

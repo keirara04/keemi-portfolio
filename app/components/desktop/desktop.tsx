@@ -4,12 +4,16 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import { AnimatePresence, motion } from "motion/react";
-import { WindowManagerProvider, useWindowManager } from "./window-manager-context";
+import {
+  WindowManagerProvider,
+  useWindowManager,
+  type WindowConfig,
+} from "./window-manager-context";
 import {
   aboutWindowConfig,
+  homeworkWindowConfig,
   projectWindowConfig,
   projectWindowId,
-  projectsWindowConfig,
   terminalWindowConfig,
   windowConfigById,
 } from "./window-registry";
@@ -17,9 +21,15 @@ import { MenuBar } from "./menu-bar";
 import { Dock } from "./dock";
 import { Window } from "./window";
 import { BootScreen } from "./boot-screen";
+import { AccountLoginScreen } from "./account-login";
+import { Screensaver } from "./screensaver";
 import { ControlCenter, useTheme } from "./control-center";
 import { WindowErrorBoundary } from "./window-error-boundary";
 import { WindowContentFor } from "./window-content";
+import { ToastHost } from "./toast-host";
+import { KonamiListener } from "./konami-listener";
+import { StickyNote } from "./sticky-note";
+import { DailyScheduleWidget } from "./daily-schedule";
 import { FolderIcon } from "./icons";
 import { IPhone } from "../mobile/iphone";
 import { projects } from "@/lib/content";
@@ -36,40 +46,41 @@ const wallpapers = [
 ];
 
 function DesktopProjectIcons() {
-  const { openWindow, focusWindow, windows, isMobile } = useWindowManager();
+  const { openWindow, isMobile } = useWindowManager();
 
   if (isMobile) return null;
+
+  const folders: { id: string; label: string; config: WindowConfig }[] = [
+    ...projects.map((project, index) => ({
+      id: projectWindowId(project.id),
+      label: project.name,
+      config: projectWindowConfig(project.id, index),
+    })),
+    { id: homeworkWindowConfig.id, label: "Homework", config: homeworkWindowConfig },
+  ];
 
   return (
     // z-5 keeps icons above <main>'s backdrop but below windows (z 11+)
     <div className="absolute right-5 top-12 z-5 flex flex-col gap-5">
-      {projects.map((project, index) => {
-        const winId = projectWindowId(project.id);
-        return (
-          <button
-            key={project.id}
-            onDoubleClick={(e) => {
-              const win = windows[winId];
-              if (win?.isOpen && !win.isMinimized) {
-                focusWindow(winId);
-                return;
-              }
-              const rect = e.currentTarget.getBoundingClientRect();
-              openWindow(projectWindowConfig(project.id, index), {
-                x: rect.x + rect.width / 2,
-                y: rect.y + rect.height / 2,
-              });
-            }}
-            className="group flex w-24 flex-col items-center gap-1 rounded-lg p-2 focus:outline-none"
-            title={`Double-click to open ${project.name}`}
-          >
-            <FolderIcon className="h-12 w-14 drop-shadow-lg transition group-hover:scale-105 group-focus:scale-105" />
-            <span className="rounded px-1 text-center text-xs font-medium leading-tight text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.6)] group-focus:bg-sky-600/80">
-              {project.name}
-            </span>
-          </button>
-        );
-      })}
+      {folders.map((folder) => (
+        <button
+          key={folder.id}
+          onDoubleClick={(e) => {
+            const rect = e.currentTarget.getBoundingClientRect();
+            openWindow(folder.config, {
+              x: rect.x + rect.width / 2,
+              y: rect.y + rect.height / 2,
+            });
+          }}
+          className="group flex w-24 flex-col items-center gap-1 rounded-lg p-2 focus:outline-none"
+          title={`Double-click to open ${folder.label}`}
+        >
+          <FolderIcon className="h-12 w-14 drop-shadow-lg transition group-hover:scale-105 group-focus:scale-105" />
+          <span className="rounded px-1 text-center text-xs font-medium leading-tight text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.6)] group-focus:bg-sky-600/80">
+            {folder.label}
+          </span>
+        </button>
+      ))}
     </div>
   );
 }
@@ -99,8 +110,8 @@ function ContextMenu({
       action: () => openWindow(aboutWindowConfig),
     },
     {
-      label: "Hire Me",
-      action: () => openWindow(windowConfigById.contact),
+      label: "Reach Out",
+      action: () => openWindow(windowConfigById.quote),
     },
   ];
 
@@ -151,6 +162,8 @@ function DesktopSurface() {
   );
   const [bootFinished, setBootFinished] = useState(false);
   const bootDone = alreadyBooted || bootFinished;
+  // Mobile skips the account picker entirely — its own lock screen already gates entry.
+  const [loggedIn, setLoggedIn] = useState(false);
   const [spotlightOpen, setSpotlightOpen] = useState(false);
   const [controlCenterOpen, setControlCenterOpen] = useState(false);
   const [wallpaperIndex, setWallpaperIndex] = useState(0);
@@ -158,12 +171,10 @@ function DesktopSurface() {
   const { mode: themeMode, setMode: setThemeMode } = useTheme();
 
   useEffect(() => {
-    // Mobile gets the iPhone shell instead of auto-opened windows
+    // Mobile gets the iPhone shell instead of an auto-opened window
     if (!bootDone || isMobile || hasBooted.current) return;
     hasBooted.current = true;
     openWindow(aboutWindowConfig);
-    const timer = setTimeout(() => openWindow(projectsWindowConfig), 200);
-    return () => clearTimeout(timer);
   }, [bootDone, isMobile, openWindow]);
 
   useEffect(() => {
@@ -249,6 +260,8 @@ function DesktopSurface() {
           />
 
           <DesktopProjectIcons />
+          <StickyNote />
+          <DailyScheduleWidget />
 
           <main className="relative min-h-dvh pt-10 pb-24">
             <AnimatePresence>
@@ -284,10 +297,20 @@ function DesktopSurface() {
               onChangeWallpaper={() => setWallpaperIndex((i) => (i + 1) % wallpapers.length)}
             />
           ) : null}
+
+          <Screensaver />
+          <ToastHost />
+          <KonamiListener />
         </>
       )}
 
-      {!bootDone ? <BootScreen onFinish={handleBootFinish} /> : null}
+      {!bootDone ? (
+        !isMobile && !loggedIn ? (
+          <AccountLoginScreen onSelect={() => setLoggedIn(true)} />
+        ) : (
+          <BootScreen onFinish={handleBootFinish} />
+        )
+      ) : null}
     </div>
   );
 }

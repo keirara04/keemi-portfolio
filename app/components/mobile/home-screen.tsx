@@ -7,17 +7,23 @@ import type { WindowConfig } from "../desktop/window-manager-context";
 import {
   aboutWindowConfig,
   contactWindowConfig,
+  homeworkWindowConfig,
+  minesweeperWindowConfig,
   notesWindowConfig,
   projectsWindowConfig,
+  quoteWindowConfig,
   terminalWindowConfig,
 } from "../desktop/window-registry";
 import {
   FinderFaceIcon,
   GitHubIcon,
+  HomeworkAppIcon,
   LinkedInIcon,
   MailAppIcon,
+  MinesweeperAppIcon,
   NotesAppIcon,
   ProfileTileIcon,
+  QuoteAppIcon,
   ResumeAppIcon,
   TerminalAppIcon,
 } from "../desktop/icons";
@@ -73,10 +79,10 @@ export function HomeScreen({
         transition={{ delay: 0.1, duration: 0.3 }}
         onClick={(e) => {
           const rect = e.currentTarget.getBoundingClientRect();
-          onLaunch(contactWindowConfig, { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 });
+          onLaunch(quoteWindowConfig, { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 });
         }}
         className="mx-5 mt-3 flex items-center gap-3 rounded-2xl bg-white/75 p-3.5 text-left shadow-lg backdrop-blur-xl dark:bg-zinc-800/75"
-        aria-label="Open contact"
+        aria-label="Open quote"
       >
         <Image
           src="/portfolio-profile.jpg"
@@ -93,7 +99,7 @@ export function HomeScreen({
           </p>
         </div>
         <span className="rounded-full bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white dark:bg-white dark:text-zinc-900">
-          Hire me
+          Reach Out
         </span>
       </motion.button>
 
@@ -113,6 +119,15 @@ export function HomeScreen({
           <span className="flex h-full w-full items-center justify-center bg-linear-to-br from-sky-600 to-blue-800">
             <LinkedInIcon className="h-3/5 w-3/5 text-white" />
           </span>
+        </AppIcon>
+        <AppIcon label="Minesweeper" onOpen={(o) => onLaunch(minesweeperWindowConfig, o)}>
+          <MinesweeperAppIcon className="h-full w-full" />
+        </AppIcon>
+        <AppIcon label="Get a Quote" onOpen={(o) => onLaunch(quoteWindowConfig, o)}>
+          <QuoteAppIcon className="h-full w-full" />
+        </AppIcon>
+        <AppIcon label="Homework" onOpen={(o) => onLaunch(homeworkWindowConfig, o)}>
+          <HomeworkAppIcon className="h-full w-full" />
         </AppIcon>
       </div>
 

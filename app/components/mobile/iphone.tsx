@@ -47,11 +47,6 @@ export function IPhone() {
     ]);
   }, []);
 
-  const goHome = useCallback(() => {
-    setNav({ type: "close", origin: launchOrigin });
-    setStack([]);
-  }, [launchOrigin]);
-
   const back = useCallback(() => {
     setStack((prev) => {
       if (prev.length <= 1) {
@@ -61,6 +56,11 @@ export function IPhone() {
       setNav({ type: "pop", origin: null });
       return prev.slice(0, -1);
     });
+  }, [launchOrigin]);
+
+  const goHome = useCallback(() => {
+    setNav({ type: "close", origin: launchOrigin });
+    setStack([]);
   }, [launchOrigin]);
 
   // Bridge: the same context the window contents already use, reinterpreted —
