@@ -73,6 +73,7 @@ export function ProjectDetailWindowContent({ projectId }: { projectId: string })
                 alt={shot.alt}
                 width={220}
                 height={128}
+                unoptimized
                 className="h-32 w-auto object-cover"
               />
             </button>
@@ -92,6 +93,7 @@ export function ProjectDetailWindowContent({ projectId }: { projectId: string })
             alt=""
             width={1200}
             height={800}
+            unoptimized
             className="max-h-full max-w-full rounded-lg object-contain shadow-2xl"
           />
         </div>
