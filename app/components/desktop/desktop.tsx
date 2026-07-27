@@ -12,8 +12,7 @@ import {
 import {
   aboutWindowConfig,
   homeworkWindowConfig,
-  projectWindowConfig,
-  projectWindowId,
+  projectsWindowConfig,
   terminalWindowConfig,
   windowConfigById,
 } from "./window-registry";
@@ -32,7 +31,6 @@ import { StickyNote } from "./sticky-note";
 import { DailyScheduleWidget } from "./daily-schedule";
 import { FolderIcon } from "./icons";
 import { IPhone } from "../mobile/iphone";
-import { projects } from "@/lib/content";
 
 // Split rarely-opened surfaces out of the initial bundle; they load on demand.
 const Spotlight = dynamic(() => import("./spotlight").then((m) => m.Spotlight), {
@@ -47,15 +45,12 @@ const wallpapers = [
 
 function DesktopProjectIcons() {
   const { openWindow, isMobile } = useWindowManager();
+  const [noteDismissed, setNoteDismissed] = useState(false);
 
   if (isMobile) return null;
 
   const folders: { id: string; label: string; config: WindowConfig }[] = [
-    ...projects.map((project, index) => ({
-      id: projectWindowId(project.id),
-      label: project.name,
-      config: projectWindowConfig(project.id, index),
-    })),
+    { id: projectsWindowConfig.id, label: "Projects", config: projectsWindowConfig },
     { id: homeworkWindowConfig.id, label: "Homework", config: homeworkWindowConfig },
   ];
 
@@ -63,23 +58,39 @@ function DesktopProjectIcons() {
     // z-5 keeps icons above <main>'s backdrop but below windows (z 11+)
     <div className="absolute right-5 top-12 z-5 flex flex-col gap-5">
       {folders.map((folder) => (
-        <button
-          key={folder.id}
-          onDoubleClick={(e) => {
-            const rect = e.currentTarget.getBoundingClientRect();
-            openWindow(folder.config, {
-              x: rect.x + rect.width / 2,
-              y: rect.y + rect.height / 2,
-            });
-          }}
-          className="group flex w-24 flex-col items-center gap-1 rounded-lg p-2 focus:outline-none"
-          title={`Double-click to open ${folder.label}`}
-        >
-          <FolderIcon className="h-12 w-14 drop-shadow-lg transition group-hover:scale-105 group-focus:scale-105" />
-          <span className="rounded px-1 text-center text-xs font-medium leading-tight text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.6)] group-focus:bg-sky-600/80">
-            {folder.label}
-          </span>
-        </button>
+        <div key={folder.id} className="relative">
+          {folder.id === projectsWindowConfig.id && !noteDismissed ? (
+            <motion.div
+              initial={{ opacity: 0, x: 6 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.6, duration: 0.35 }}
+              className="absolute right-full top-3 mr-3 w-max select-none whitespace-nowrap rounded-xs bg-yellow-100 px-2.5 py-1.5 text-[11px] font-medium text-zinc-700 shadow-[0_6px_16px_-4px_rgba(0,0,0,0.4)] dark:bg-yellow-200/90"
+            >
+              click me
+              <span
+                aria-hidden
+                className="absolute left-full top-1/2 h-2 w-2 -translate-x-1 -translate-y-1/2 rotate-45 bg-yellow-100 dark:bg-yellow-200/90"
+              />
+            </motion.div>
+          ) : null}
+          <button
+            onDoubleClick={(e) => {
+              if (folder.id === projectsWindowConfig.id) setNoteDismissed(true);
+              const rect = e.currentTarget.getBoundingClientRect();
+              openWindow(folder.config, {
+                x: rect.x + rect.width / 2,
+                y: rect.y + rect.height / 2,
+              });
+            }}
+            className="group flex w-24 flex-col items-center gap-1 rounded-lg p-2 focus:outline-none"
+            title={`Double-click to open ${folder.label}`}
+          >
+            <FolderIcon className="h-12 w-14 drop-shadow-lg transition group-hover:scale-105 group-focus:scale-105" />
+            <span className="rounded px-1 text-center text-xs font-medium leading-tight text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.6)] group-focus:bg-sky-600/80">
+              {folder.label}
+            </span>
+          </button>
+        </div>
       ))}
     </div>
   );

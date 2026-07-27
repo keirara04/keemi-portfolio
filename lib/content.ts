@@ -142,6 +142,41 @@ export const projects: Project[] = [
     placeholder: false,
     internal: true,
   },
+  {
+    id: "lyns-little-kitchen",
+    name: "Cookie Business System (Lyn's Little Kitchen)",
+    tagline: "Online ordering system for a home-based cookie business",
+    description:
+      "Full-stack app for a home cookie business in Jasin, Melaka. Customers browse products, place orders, pay online, and track order status. Admins manage products, inventory, orders, and analytics.",
+    highlights: [
+      "Customer-facing storefront with online ordering and order tracking",
+      "Admin dashboard for product, inventory, and order management with analytics",
+      "Image/file storage via Cloudinary",
+      "Token-based auth with Laravel Sanctum",
+    ],
+    stack: [
+      "Nuxt 4",
+      "Vue 3",
+      "TypeScript",
+      "Tailwind CSS",
+      "Pinia",
+      "Laravel",
+      "Laravel Sanctum",
+      "PostgreSQL",
+      "Cloudinary",
+    ],
+    liveUrl: "https://lynslittlekitchen.vercel.app",
+    repoUrl: "https://github.com/keirara04/lynslittlekitchen",
+    screenshots: [
+      { src: "/LLK-1.png", alt: "Lyn's Little Kitchen homepage hero" },
+      { src: "/LLK-2.png", alt: "Lyn's Little Kitchen product listing and kitchen story" },
+      { src: "/LLK-3.png", alt: "Lyn's Little Kitchen order steps overview and footer" },
+      { src: "/LLK-4.png", alt: "Lyn's Little Kitchen how-to-order page with step-by-step guide" },
+      { src: "/LLK-5.png", alt: "Admin dashboard with sales, orders, and stock overview" },
+      { src: "/LLK-6.png", alt: "Admin products page listing cookies with stock and status" },
+    ],
+    placeholder: false,
+  },
 ];
 
 export type SchoolReport = {
