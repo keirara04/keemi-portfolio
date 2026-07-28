@@ -177,6 +177,37 @@ export const projects: Project[] = [
     ],
     placeholder: false,
   },
+  {
+    id: "that-fridge",
+    name: "That Fridge",
+    tagline: "AI-powered kitchen assistant that tracks groceries and cuts food waste",
+    description:
+      "Snap a photo of groceries or a receipt and That Fridge tracks what you own, where it's stored (fridge/freezer/pantry), and when it expires — surfacing recipes from what's fresh, a shopping list, and expiry alerts before food goes to waste. Built around 4 \"agent\" personas: Guardian (freshness alerts), Shopkeeper (low stock), Chef (recipes), and Organizer (fridge layout). Two-person build — I own the data/auth/CRUD track, my teammate owns ingestion/AI.",
+    highlights: [
+      "Photo/receipt capture pipeline that extracts and tracks grocery items automatically",
+      "Location-aware inventory across fridge, freezer, and pantry with expiry tracking",
+      "4 agent personas driving alerts, restock suggestions, recipes, and layout organization",
+      "Sanctum Bearer token auth on a Laravel API backend",
+    ],
+    stack: [
+      "Next.js 16",
+      "React",
+      "TypeScript",
+      "PHP (Laravel 13)",
+      "Laravel Sanctum",
+      "PostgreSQL",
+      "Redis",
+      "Docker",
+    ],
+    liveUrl: undefined,
+    repoUrl: "https://github.com/naufalkmd/ThatFridge",
+    screenshots: [
+      { src: "/TF-1.webp", alt: "That Fridge home dashboard with fridge inventory and crew" },
+      { src: "/TF-2.webp", alt: "That Fridge quick chat answering what to cook tonight" },
+      { src: "/TF-3.webp", alt: "That Fridge recipe suggestions from crew tab" },
+    ],
+    placeholder: false,
+  },
 ];
 
 export type SchoolReport = {
