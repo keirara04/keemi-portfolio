@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { Pencil, Trash2 } from "lucide-react";
 import type { EntityConfig, FieldConfig } from "./entity-configs";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "/api";
@@ -57,6 +58,13 @@ function formValuesToPayload(values: FormValues, fields: FieldConfig[]): Record<
     }
   }
   return payload;
+}
+
+function formatCellValue(value: unknown): string {
+  if (Array.isArray(value)) return value.join(", ");
+  if (typeof value === "boolean") return value ? "Yes" : "No";
+  if (value == null) return "—";
+  return String(value);
 }
 
 function FieldInput({
@@ -350,47 +358,75 @@ export function EntityTable({ config }: { config: EntityConfig }) {
         </div>
       )}
 
-      <ul className="flex flex-col gap-2">
-        {rows.map((row) => (
-          <li
-            key={row.id}
-            className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900"
-          >
-            {editingId === row.id ? (
-              <EntityForm
-                config={config}
-                initialValues={rowToFormValues(row, config.fields)}
-                onSubmit={(values) => handleUpdate(row.id, values)}
-                onCancel={() => setEditingId(null)}
-                submitLabel="Save"
-              />
-            ) : (
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-zinc-800 dark:text-zinc-200">
-                  {String(row[config.titleField] ?? row.id)}
-                </span>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setEditingId(row.id)}
-                    className="text-xs text-sky-600 hover:underline dark:text-sky-400"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(row.id)}
-                    className="text-xs text-red-600 hover:underline dark:text-red-400"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            )}
-          </li>
-        ))}
-        {rows.length === 0 && !creating && (
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">No {config.label.toLowerCase()} yet.</p>
-        )}
-      </ul>
+      {rows.length === 0 && !creating ? (
+        <p className="text-sm text-zinc-500 dark:text-zinc-400">No {config.label.toLowerCase()} yet.</p>
+      ) : (
+        <div className="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-zinc-50 text-[11px] uppercase tracking-wide text-zinc-500 dark:bg-zinc-800/50 dark:text-zinc-400">
+              <tr>
+                {(config.listColumns ?? [{ name: config.titleField, label: config.titleField }]).map(
+                  (col) => (
+                    <th key={col.name} className="px-4 py-2.5 font-medium">
+                      {col.label}
+                    </th>
+                  )
+                )}
+                <th className="px-4 py-2.5 font-medium">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
+              {rows.map((row) => {
+                const columns = config.listColumns ?? [
+                  { name: config.titleField, label: config.titleField },
+                ];
+                if (editingId === row.id) {
+                  return (
+                    <tr key={row.id} className="bg-white dark:bg-zinc-900">
+                      <td colSpan={columns.length + 1} className="p-4">
+                        <EntityForm
+                          config={config}
+                          initialValues={rowToFormValues(row, config.fields)}
+                          onSubmit={(values) => handleUpdate(row.id, values)}
+                          onCancel={() => setEditingId(null)}
+                          submitLabel="Save"
+                        />
+                      </td>
+                    </tr>
+                  );
+                }
+                return (
+                  <tr key={row.id} className="bg-white dark:bg-zinc-900">
+                    {columns.map((col) => (
+                      <td key={col.name} className="max-w-xs truncate px-4 py-3 text-zinc-700 dark:text-zinc-300">
+                        {formatCellValue(row[col.name])}
+                      </td>
+                    ))}
+                    <td className="px-4 py-3">
+                      <div className="flex gap-3">
+                        <button
+                          onClick={() => setEditingId(row.id)}
+                          aria-label="Edit"
+                          className="text-sky-600 hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-300"
+                        >
+                          <Pencil className="h-4 w-4" strokeWidth={2} />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(row.id)}
+                          aria-label="Delete"
+                          className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                        >
+                          <Trash2 className="h-4 w-4" strokeWidth={2} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }

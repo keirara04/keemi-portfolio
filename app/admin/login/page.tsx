@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { ShieldCheck } from "lucide-react";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "/api";
 
@@ -44,9 +45,12 @@ export default function AdminLoginPage() {
         onSubmit={handleSubmit}
         className="w-full max-w-sm rounded-lg border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
       >
-        <h1 className="mb-4 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
-          Admin login
-        </h1>
+        <div className="mb-4 flex items-center gap-2.5">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-sky-600 text-white">
+            <ShieldCheck className="h-4.5 w-4.5" strokeWidth={2} />
+          </span>
+          <h1 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Admin login</h1>
+        </div>
 
         <label className="mb-1 block text-xs font-medium text-zinc-600 dark:text-zinc-400">
           Email
