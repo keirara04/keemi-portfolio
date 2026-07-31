@@ -4,7 +4,8 @@ services:
       context: .
       dockerfile: Dockerfile
     restart: unless-stopped
-    env_file: .env
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-/api}
     expose:
       - "3000"
     depends_on:
@@ -15,7 +16,16 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     restart: unless-stopped
-    env_file: ./backend/.env
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?set DATABASE_URL}
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:?set ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?set ADMIN_PASSWORD}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_FROM: ${SMTP_FROM:-}
     expose:
       - "8000"
     depends_on:
