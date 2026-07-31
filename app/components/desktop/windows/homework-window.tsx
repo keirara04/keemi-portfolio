@@ -1,8 +1,9 @@
 "use client";
 
-import { schoolReports } from "@/lib/content";
+import { useContent } from "@/lib/content-repo";
 
 export function HomeworkWindowContent() {
+  const { schoolReports } = useContent();
   return (
     <div className="flex h-full flex-col gap-3 text-sm">
       <p className="text-xs text-zinc-500 dark:text-zinc-400">

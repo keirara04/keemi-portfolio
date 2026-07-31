@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "motion/react";
-import { profile } from "@/lib/content";
+import { useContent } from "@/lib/content-repo";
 import type { WindowConfig } from "../desktop/window-manager-context";
 import {
   aboutWindowConfig,
@@ -67,6 +67,7 @@ export function HomeScreen({
 }: {
   onLaunch: (config: WindowConfig, origin: LaunchOrigin) => void;
 }) {
+  const { profile } = useContent();
   const openExternal = (url: string) => window.open(url, "_blank", "noopener,noreferrer");
 
   return (

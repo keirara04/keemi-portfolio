@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "motion/react";
-import { profile, projects, skillGroups } from "@/lib/content";
+import { useContent } from "@/lib/content-repo";
 import { useWindowManager } from "./window-manager-context";
 import { projectWindowConfig, windowConfigById } from "./window-registry";
 import { MagnifierIcon } from "./icons";
@@ -16,6 +16,7 @@ type SpotlightItem = {
 };
 
 export function Spotlight({ onClose }: { onClose: () => void }) {
+  const { profile, projects, skillGroups } = useContent();
   const { openWindow } = useWindowManager();
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(0);
@@ -97,7 +98,7 @@ export function Spotlight({ onClose }: { onClose: () => void }) {
     ];
 
     return [...windowItems, ...projectItems, ...skillItems, ...linkItems];
-  }, [openWindow, onClose]);
+  }, [openWindow, onClose, profile, projects, skillGroups]);
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();

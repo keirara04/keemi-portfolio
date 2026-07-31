@@ -4,14 +4,14 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import { AnimatePresence, motion, useMotionValue, useSpring } from "motion/react";
-import { interests, profile, skillGroups, specs } from "@/lib/content";
+import { useContent } from "@/lib/content-repo";
 
 const TABS = ["Overview", "Skills", "Interests"] as const;
 type Tab = (typeof TABS)[number];
 
 // Fullscreen photo viewer styled like macOS Quick Look, rendered in a portal
 // because the window's transform would trap position:fixed inside it.
-function QuickLook({ onClose }: { onClose: () => void }) {
+function QuickLook({ name, onClose }: { name: string; onClose: () => void }) {
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -29,10 +29,10 @@ function QuickLook({ onClose }: { onClose: () => void }) {
       onClick={onClose}
       className="fixed inset-0 z-95 flex flex-col items-center justify-center gap-3 bg-black/75 backdrop-blur-md"
       role="dialog"
-      aria-label={`Photo of ${profile.name}`}
+      aria-label={`Photo of ${name}`}
     >
       <div className="flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs text-white/90">
-        <span className="font-medium">{profile.name}.jpg</span>
+        <span className="font-medium">{name}.jpg</span>
         <span className="text-white/50">— Quick Look</span>
       </div>
       <motion.div
@@ -45,7 +45,7 @@ function QuickLook({ onClose }: { onClose: () => void }) {
       >
         <Image
           src="/portfolio-profile.jpg"
-          alt={profile.name}
+          alt={name}
           fill
           sizes="80vw"
           className="object-cover"
@@ -58,7 +58,7 @@ function QuickLook({ onClose }: { onClose: () => void }) {
   );
 }
 
-function TiltPhoto({ onOpen }: { onOpen: () => void }) {
+function TiltPhoto({ name, onOpen }: { name: string; onOpen: () => void }) {
   const rotateX = useMotionValue(0);
   const rotateY = useMotionValue(0);
   const springX = useSpring(rotateX, { stiffness: 200, damping: 18 });
@@ -84,7 +84,7 @@ function TiltPhoto({ onOpen }: { onOpen: () => void }) {
     >
       <Image
         src="/portfolio-profile.jpg"
-        alt={profile.name}
+        alt={name}
         fill
         sizes="96px"
         className="object-cover"
@@ -97,6 +97,7 @@ function TiltPhoto({ onOpen }: { onOpen: () => void }) {
 }
 
 export function AboutWindowContent() {
+  const { interests, profile, skillGroups, specs } = useContent();
   const [tab, setTab] = useState<Tab>("Overview");
   const [quickLookOpen, setQuickLookOpen] = useState(false);
 
@@ -135,7 +136,7 @@ export function AboutWindowContent() {
         >
           {tab === "Overview" ? (
             <div className="mx-auto my-auto flex w-full max-w-md flex-col items-center gap-4 text-center">
-              <TiltPhoto onOpen={() => setQuickLookOpen(true)} />
+              <TiltPhoto name={profile.name} onOpen={() => setQuickLookOpen(true)} />
               <div>
                 <p className="text-lg font-semibold text-zinc-900 dark:text-white">{profile.name}</p>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400">{profile.title}</p>
@@ -220,7 +221,9 @@ export function AboutWindowContent() {
       </AnimatePresence>
 
       <AnimatePresence>
-        {quickLookOpen ? <QuickLook onClose={() => setQuickLookOpen(false)} /> : null}
+        {quickLookOpen ? (
+          <QuickLook name={profile.name} onClose={() => setQuickLookOpen(false)} />
+        ) : null}
       </AnimatePresence>
     </div>
   );

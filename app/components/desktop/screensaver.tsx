@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { profile } from "@/lib/content";
+import { useContent } from "@/lib/content-repo";
 import { useLongDate, useShortTime } from "../mobile/use-time";
 
 const IDLE_MS = 2 * 60 * 1000;
@@ -10,6 +10,7 @@ const IDLE_MS = 2 * 60 * 1000;
 // Fades to a drifting-clock screensaver after two idle minutes (or when the
 // terminal's `screensaver` command fires the custom event); any input wakes it.
 export function Screensaver() {
+  const { profile } = useContent();
   const [active, setActive] = useState(false);
   const time = useShortTime();
   const date = useLongDate();

@@ -32,6 +32,8 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
+!backend/.env.example
 
 # vercel
 .vercel
@@ -42,3 +44,11 @@ next-env.d.ts
 
 #claude
 /.claude
+
+# backend (Python/FastAPI)
+backend/.venv
+backend/__pycache__
+backend/**/__pycache__
+backend/*.egg-info
+backend/.pytest_cache
+

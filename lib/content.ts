@@ -14,8 +14,8 @@ export const profile = {
   },
 };
 
-export function whatsappUrl(message: string): string {
-  const digits = profile.whatsapp.replace(/[^\d]/g, "");
+export function whatsappUrl(whatsapp: string, message: string): string {
+  const digits = whatsapp.replace(/[^\d]/g, "");
   return `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
 }
 

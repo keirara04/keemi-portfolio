@@ -2,11 +2,12 @@
 
 import Image from "next/image";
 import { motion } from "motion/react";
-import { profile } from "@/lib/content";
+import { useContent } from "@/lib/content-repo";
 import { StatusBar } from "./status-bar";
 import { useLongDate, useShortTime } from "./use-time";
 
 export function LockScreen({ onUnlock }: { onUnlock: () => void }) {
+  const { profile } = useContent();
   const time = useShortTime();
   const date = useLongDate();
 

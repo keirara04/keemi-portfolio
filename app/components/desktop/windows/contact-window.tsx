@@ -1,23 +1,43 @@
 "use client";
 
 import { useState } from "react";
-import { profile } from "@/lib/content";
+import { useContent } from "@/lib/content-repo";
+import { submitContactForm } from "@/lib/backend";
 import { GitHubIcon, LinkedInIcon } from "../icons";
 
 const SUBJECT_PRESETS = ["Freelance project", "Collaboration", "Just saying hi"];
 const MAX_BODY_LENGTH = 1500; // stay well under mailto URL limits
 
+type SendStatus = "idle" | "sending" | "sent" | "error";
+
 export function ContactWindowContent() {
+  const { profile } = useContent();
   const [from, setFrom] = useState("");
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
+  const [status, setStatus] = useState<SendStatus>("idle");
 
-  const send = () => {
+  const openMailClient = () => {
     const fullBody = from ? `${body}\n\n— ${from}` : body;
     const url = `mailto:${profile.email}?subject=${encodeURIComponent(
       subject || "Hello from your portfolio"
     )}&body=${encodeURIComponent(fullBody)}`;
     window.location.href = url;
+  };
+
+  const send = async () => {
+    setStatus("sending");
+    try {
+      await submitContactForm({
+        fromName: from.trim() || "Anonymous",
+        subject: subject || "Hello from your portfolio",
+        body,
+      });
+      setStatus("sent");
+    } catch {
+      setStatus("error");
+      openMailClient();
+    }
   };
 
   return (
@@ -95,15 +115,19 @@ export function ContactWindowContent() {
             <LinkedInIcon className="h-4 w-4" />
           </a>
           <span className="text-[11px] text-zinc-400 dark:text-zinc-500">
-            Usually replies within a day
+            {status === "sent"
+              ? "Sent! Thanks for reaching out."
+              : status === "error"
+                ? "Couldn't reach the server — opening your mail app instead."
+                : "Usually replies within a day"}
           </span>
         </div>
         <button
           onClick={send}
-          disabled={!body.trim()}
+          disabled={!body.trim() || status === "sending"}
           className="rounded-md bg-sky-600 px-4 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-sky-500 disabled:cursor-not-allowed disabled:opacity-40"
         >
-          Send
+          {status === "sending" ? "Sending…" : "Send"}
         </button>
       </div>
     </div>

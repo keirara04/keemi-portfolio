@@ -9,6 +9,7 @@ import {
   useWindowManager,
   type WindowConfig,
 } from "./window-manager-context";
+import { ContentProvider } from "@/lib/content-repo";
 import {
   aboutWindowConfig,
   homeworkWindowConfig,
@@ -328,8 +329,10 @@ function DesktopSurface() {
 
 export function Desktop() {
   return (
-    <WindowManagerProvider>
-      <DesktopSurface />
-    </WindowManagerProvider>
+    <ContentProvider>
+      <WindowManagerProvider>
+        <DesktopSurface />
+      </WindowManagerProvider>
+    </ContentProvider>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useSyncExternalStore } from "react";
-import { profile } from "@/lib/content";
+import { useContent } from "@/lib/content-repo";
 import {
   ABOUT_WINDOW_ID,
   CONTACT_WINDOW_ID,
@@ -41,6 +41,7 @@ export function MenuBar({
   onControlCenter?: () => void;
 }) {
   const time = useClock();
+  const { profile } = useContent();
   const { openWindow } = useWindowManager();
   const appleClicks = useRef<number[]>([]);
 

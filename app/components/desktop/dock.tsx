@@ -8,7 +8,7 @@ import {
   useTransform,
   type MotionValue,
 } from "motion/react";
-import { profile } from "@/lib/content";
+import { useContent } from "@/lib/content-repo";
 import { dockApps, windowConfigById } from "./window-registry";
 import { useWindowManager } from "./window-manager-context";
 import {
@@ -109,6 +109,7 @@ function DockItem({
 }
 
 export function Dock() {
+  const { profile } = useContent();
   const { windows, openWindow, isMobile } = useWindowManager();
   const mouseX = useMotionValue(Infinity);
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { interests, profile, projects, skillGroups } from "@/lib/content";
+import { useContent } from "@/lib/content-repo";
 import { useWindowManager } from "../window-manager-context";
 import {
   contactWindowConfig,
@@ -33,6 +33,7 @@ const HELP_TEXT = [
 ];
 
 export function TerminalWindowContent() {
+  const { interests, profile, projects, skillGroups } = useContent();
   const { openWindow } = useWindowManager();
   const [lines, setLines] = useState<TerminalLine[]>(WELCOME);
   const [input, setInput] = useState("");

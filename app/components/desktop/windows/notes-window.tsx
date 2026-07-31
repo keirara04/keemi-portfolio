@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { notes, secretNote } from "@/lib/content";
+import { secretNote } from "@/lib/content";
+import { useContent } from "@/lib/content-repo";
 import { SECRET_FOUND_KEY } from "@/lib/easter-eggs";
 
 export function NotesWindowContent() {
+  const { notes } = useContent();
   const [selectedId, setSelectedId] = useState(notes[0]?.id);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [secretUnlocked, setSecretUnlocked] = useState(

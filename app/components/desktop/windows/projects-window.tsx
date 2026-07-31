@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { projects } from "@/lib/content";
+import { useContent } from "@/lib/content-repo";
 import { useWindowManager } from "../window-manager-context";
 import { projectWindowConfig } from "../window-registry";
 import { FolderIcon } from "../icons";
 
 export function ProjectsWindowContent() {
+  const { projects } = useContent();
   const { openWindow } = useWindowManager();
 
   return (
@@ -33,6 +34,7 @@ export function ProjectsWindowContent() {
 }
 
 export function ProjectDetailWindowContent({ projectId }: { projectId: string }) {
+  const { projects } = useContent();
   const project = projects.find((p) => p.id === projectId);
   const [lightbox, setLightbox] = useState<string | null>(null);
   if (!project) return null;

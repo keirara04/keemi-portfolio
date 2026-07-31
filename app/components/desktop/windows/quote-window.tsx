@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { profile, whatsappUrl } from "@/lib/content";
+import { whatsappUrl } from "@/lib/content";
+import { useContent } from "@/lib/content-repo";
 import {
   CURRENCY_LABEL,
   bundles,
@@ -15,6 +16,7 @@ const formatMYR = (value: number) => `${CURRENCY_LABEL} ${value.toLocaleString("
 const formatRange = (min: number, max: number) => `${formatMYR(min)} – ${formatMYR(max)}`;
 
 export function QuoteWindowContent() {
+  const { profile } = useContent();
   const [projectTypeId, setProjectTypeId] = useState(projectTypes[0]?.id ?? "");
   const [featureIds, setFeatureIds] = useState<string[]>([]);
   const [timelineId, setTimelineId] = useState(timelineOptions[0]?.id ?? "standard");
@@ -208,7 +210,7 @@ export function QuoteWindowContent() {
         </p>
         <div className="flex gap-2">
           <a
-            href={whatsappUrl(summaryMessage)}
+            href={whatsappUrl(profile.whatsapp, summaryMessage)}
             target="_blank"
             rel="noopener noreferrer"
             className="flex flex-1 items-center justify-center gap-1.5 rounded-md bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-500"
