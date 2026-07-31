@@ -1,3 +1,8 @@
+networks:
+  default:
+  dokploy-network:
+    external: true
+
 services:
   web:
     build:
@@ -8,6 +13,9 @@ services:
       NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-/api}
     expose:
       - "3000"
+    networks:
+      - default
+      - dokploy-network
     depends_on:
       - api
 
@@ -16,6 +24,9 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     restart: unless-stopped
+    networks:
+      - default
+      - dokploy-network
     environment:
       DATABASE_URL: ${DATABASE_URL:?set DATABASE_URL}
       JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET}
