@@ -397,7 +397,10 @@ export function EntityTable({ config }: { config: EntityConfig }) {
                 return (
                   <tr key={row.id} className="bg-white dark:bg-zinc-900">
                     {columns.map((col) => (
-                      <td key={col.name} className="max-w-xs truncate px-4 py-3 text-zinc-700 dark:text-zinc-300">
+                      <td
+                        key={col.name}
+                        className="max-w-sm px-4 py-3 whitespace-normal break-words text-zinc-700 dark:text-zinc-300"
+                      >
                         {formatCellValue(row[col.name])}
                       </td>
                     ))}
