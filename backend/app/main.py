@@ -1,12 +1,13 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import admin, admin_cms, analytics, content, contact
+from app.routers import admin, admin_cms, analytics, content, contact, uploads
 
 app = FastAPI(title="keemi-portfolio backend")
 
-# Same-origin in production (Caddy proxies /api/* to this service), so this
-# only matters for local dev where Next runs on a different port.
+# Same-origin in production (the reverse proxy routes /api/* to this
+# service), so this only matters for local dev where Next runs on a
+# different port.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],
@@ -20,6 +21,7 @@ app.include_router(contact.router)
 app.include_router(analytics.router)
 app.include_router(admin.router)
 app.include_router(admin_cms.router)
+app.include_router(uploads.router)
 
 
 @app.get("/health")

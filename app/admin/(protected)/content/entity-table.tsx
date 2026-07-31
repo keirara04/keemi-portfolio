@@ -6,23 +6,30 @@ import type { EntityConfig, FieldConfig } from "./entity-configs";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "/api";
 
 type Row = Record<string, unknown> & { id: string };
+type Screenshot = { src: string; alt: string };
+type FieldValue = string | boolean | Screenshot[];
+type FormValues = Record<string, FieldValue>;
 
-function emptyFormValues(fields: FieldConfig[]): Record<string, string | boolean> {
-  const values: Record<string, string | boolean> = {};
+function emptyFormValues(fields: FieldConfig[]): FormValues {
+  const values: FormValues = {};
   for (const field of fields) {
-    values[field.name] = field.type === "boolean" ? false : "";
+    if (field.type === "boolean") values[field.name] = false;
+    else if (field.type === "imageList") values[field.name] = [];
+    else values[field.name] = "";
   }
   return values;
 }
 
-function rowToFormValues(row: Row, fields: FieldConfig[]): Record<string, string | boolean> {
-  const values: Record<string, string | boolean> = {};
+function rowToFormValues(row: Row, fields: FieldConfig[]): FormValues {
+  const values: FormValues = {};
   for (const field of fields) {
     const raw = row[field.name];
     if (field.type === "boolean") {
       values[field.name] = Boolean(raw);
     } else if (field.type === "stringList") {
       values[field.name] = Array.isArray(raw) ? raw.join(", ") : "";
+    } else if (field.type === "imageList") {
+      values[field.name] = Array.isArray(raw) ? (raw as Screenshot[]) : [];
     } else {
       values[field.name] = raw == null ? "" : String(raw);
     }
@@ -30,10 +37,7 @@ function rowToFormValues(row: Row, fields: FieldConfig[]): Record<string, string
   return values;
 }
 
-function formValuesToPayload(
-  values: Record<string, string | boolean>,
-  fields: FieldConfig[]
-): Record<string, unknown> {
+function formValuesToPayload(values: FormValues, fields: FieldConfig[]): Record<string, unknown> {
   const payload: Record<string, unknown> = {};
   for (const field of fields) {
     const raw = values[field.name];
@@ -46,6 +50,8 @@ function formValuesToPayload(
         .filter(Boolean);
     } else if (field.type === "boolean") {
       payload[field.name] = Boolean(raw);
+    } else if (field.type === "imageList") {
+      payload[field.name] = raw;
     } else {
       payload[field.name] = raw;
     }
@@ -102,6 +108,84 @@ function FieldInput({
   );
 }
 
+function ImageListInput({
+  value,
+  onChange,
+}: {
+  value: Screenshot[];
+  onChange: (value: Screenshot[]) => void;
+}) {
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+
+    setUploading(true);
+    setError(null);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const response = await fetch(`${API_BASE_URL}/admin/uploads`, {
+        method: "POST",
+        body: formData,
+      });
+      if (!response.ok) throw new Error();
+      const { url } = await response.json();
+      onChange([...value, { src: url, alt: "" }]);
+    } catch {
+      setError("Upload failed — is Spaces configured?");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-2">
+      {value.map((shot, index) => (
+        <div
+          key={shot.src}
+          className="flex items-center gap-2 rounded-md border border-zinc-200 p-2 dark:border-zinc-700"
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element -- arbitrary admin-uploaded URLs, not a next/image remote pattern */}
+          <img src={shot.src} alt={shot.alt} className="h-12 w-12 rounded object-cover" />
+          <input
+            type="text"
+            value={shot.alt}
+            onChange={(e) => {
+              const next = [...value];
+              next[index] = { ...next[index], alt: e.target.value };
+              onChange(next);
+            }}
+            placeholder="Alt text"
+            className="flex-1 rounded-md border border-zinc-300 bg-white px-2 py-1 text-xs text-zinc-900 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
+          />
+          <button
+            type="button"
+            onClick={() => onChange(value.filter((_, i) => i !== index))}
+            className="text-xs text-red-600 hover:underline dark:text-red-400"
+          >
+            Remove
+          </button>
+        </div>
+      ))}
+      <label className="w-fit cursor-pointer rounded-md border border-dashed border-zinc-300 px-3 py-1.5 text-xs text-zinc-600 dark:border-zinc-700 dark:text-zinc-400">
+        {uploading ? "Uploading…" : "+ Upload image"}
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          disabled={uploading}
+          className="hidden"
+        />
+      </label>
+      {error && <p className="text-xs text-red-600 dark:text-red-400">{error}</p>}
+    </div>
+  );
+}
+
 function EntityForm({
   config,
   initialValues,
@@ -110,8 +194,8 @@ function EntityForm({
   submitLabel,
 }: {
   config: EntityConfig;
-  initialValues: Record<string, string | boolean>;
-  onSubmit: (values: Record<string, string | boolean>) => Promise<void>;
+  initialValues: FormValues;
+  onSubmit: (values: FormValues) => Promise<void>;
   onCancel?: () => void;
   submitLabel: string;
 }) {
@@ -139,12 +223,19 @@ function EntityForm({
           <label className="mb-1 block text-xs font-medium text-zinc-600 dark:text-zinc-400">
             {field.label}
           </label>
-          <FieldInput
-            field={field}
-            value={values[field.name]}
-            onChange={(v) => setValues((prev) => ({ ...prev, [field.name]: v }))}
-            disabled={field.readOnlyOnEdit && submitLabel === "Save"}
-          />
+          {field.type === "imageList" ? (
+            <ImageListInput
+              value={values[field.name] as Screenshot[]}
+              onChange={(v) => setValues((prev) => ({ ...prev, [field.name]: v }))}
+            />
+          ) : (
+            <FieldInput
+              field={field}
+              value={values[field.name] as string | boolean}
+              onChange={(v) => setValues((prev) => ({ ...prev, [field.name]: v }))}
+              disabled={field.readOnlyOnEdit && submitLabel === "Save"}
+            />
+          )}
         </div>
       ))}
       {error && <p className="text-xs text-red-600 dark:text-red-400">{error}</p>}
@@ -192,7 +283,7 @@ export function EntityTable({ config }: { config: EntityConfig }) {
     load();
   }, [load]);
 
-  const handleCreate = async (values: Record<string, string | boolean>) => {
+  const handleCreate = async (values: FormValues) => {
     const response = await fetch(`${API_BASE_URL}${config.apiPath}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -203,7 +294,7 @@ export function EntityTable({ config }: { config: EntityConfig }) {
     await load();
   };
 
-  const handleUpdate = async (id: string, values: Record<string, string | boolean>) => {
+  const handleUpdate = async (id: string, values: FormValues) => {
     const response = await fetch(`${API_BASE_URL}${config.apiPath}/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },

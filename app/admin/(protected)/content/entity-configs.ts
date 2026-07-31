@@ -1,4 +1,4 @@
-export type FieldType = "text" | "textarea" | "number" | "boolean" | "stringList";
+export type FieldType = "text" | "textarea" | "number" | "boolean" | "stringList" | "imageList";
 
 export type FieldConfig = {
   name: string;
@@ -65,6 +65,7 @@ export const ENTITY_CONFIGS: Record<string, EntityConfig> = {
       { name: "placeholder", label: "Placeholder", type: "boolean" },
       { name: "internal", label: "Internal", type: "boolean" },
       { name: "sort_order", label: "Sort order", type: "number" },
+      { name: "screenshots", label: "Screenshots", type: "imageList" },
     ],
   },
   "school-reports": {

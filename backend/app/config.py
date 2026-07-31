@@ -15,6 +15,13 @@ class Settings(BaseSettings):
     smtp_pass: str = ""
     smtp_from: str = ""
 
+    spaces_key: str = ""
+    spaces_secret: str = ""
+    spaces_bucket: str = ""
+    spaces_region: str = ""
+    spaces_endpoint: str = ""
+    spaces_cdn_url: str = ""
+
     jwt_algorithm: str = "HS256"
     jwt_expire_minutes: int = 60 * 24 * 7
 
