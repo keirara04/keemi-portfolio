@@ -37,3 +37,29 @@ async def test_update_missing_project_returns_404(admin_client: AsyncClient):
         },
     )
     assert response.status_code == 404
+
+
+async def test_project_id_auto_slugified_from_name(admin_client: AsyncClient):
+    create = await admin_client.post(
+        "/admin/projects",
+        json={"name": "My Test Project!", "tagline": "t", "description": "d", "stack": []},
+    )
+    assert create.status_code == 201
+    project_id = create.json()["id"]
+    assert project_id == "my-test-project"
+
+    delete = await admin_client.delete(f"/admin/projects/{project_id}")
+    assert delete.status_code == 204
+
+
+async def test_project_auto_slug_deduplicates_on_collision(admin_client: AsyncClient):
+    first = await admin_client.post(
+        "/admin/projects",
+        json={"name": "Same Name", "tagline": "t", "description": "d", "stack": []},
+    )
+    second = await admin_client.post(
+        "/admin/projects",
+        json={"name": "Same Name", "tagline": "t", "description": "d", "stack": []},
+    )
+    assert first.json()["id"] == "same-name"
+    assert second.json()["id"] == "same-name-2"

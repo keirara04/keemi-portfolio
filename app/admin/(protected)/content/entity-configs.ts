@@ -5,6 +5,7 @@ export type FieldConfig = {
   label: string;
   type: FieldType;
   readOnlyOnEdit?: boolean;
+  hiddenOnCreate?: boolean;
 };
 
 export type EntityConfig = {
@@ -54,7 +55,7 @@ export const ENTITY_CONFIGS: Record<string, EntityConfig> = {
     apiPath: "/admin/projects",
     titleField: "name",
     fields: [
-      { name: "id", label: "ID (slug)", type: "text", readOnlyOnEdit: true },
+      { name: "id", label: "ID (slug)", type: "text", readOnlyOnEdit: true, hiddenOnCreate: true },
       { name: "name", label: "Name", type: "text" },
       { name: "tagline", label: "Tagline", type: "text" },
       { name: "description", label: "Description", type: "textarea" },

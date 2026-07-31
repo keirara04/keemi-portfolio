@@ -6,6 +6,7 @@ this is one parametrized router builder instead of seven near-identical
 copies.
 """
 
+import re
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -29,11 +30,17 @@ from app.schemas import (
 router = APIRouter(prefix="/admin", tags=["admin-cms"])
 
 
+def _slugify(text: str) -> str:
+    slug = re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
+    return slug or "item"
+
+
 def _register_crud(
     *,
     path: str,
     model: type,
     create_schema: type[BaseModel],
+    id_source_field: str | None = None,
 ) -> None:
     tag = model.__tablename__
 
@@ -51,7 +58,18 @@ def _register_crud(
         db: AsyncSession = Depends(get_db),
         _admin: str = Depends(get_current_admin),
     ) -> dict[str, Any]:
-        row = model(**payload.model_dump())
+        data = payload.model_dump()
+
+        if id_source_field is not None and not data.get("id"):
+            base_slug = _slugify(str(data[id_source_field]))
+            slug = base_slug
+            suffix = 2
+            while await db.get(model, slug) is not None:
+                slug = f"{base_slug}-{suffix}"
+                suffix += 1
+            data["id"] = slug
+
+        row = model(**data)
         db.add(row)
         await db.commit()
         await db.refresh(row)
@@ -94,6 +112,6 @@ _register_crud(path="profile", model=Profile, create_schema=ProfileIn)
 _register_crud(path="specs", model=Spec, create_schema=SpecIn)
 _register_crud(path="skill-groups", model=SkillGroup, create_schema=SkillGroupIn)
 _register_crud(path="interests", model=Interest, create_schema=InterestIn)
-_register_crud(path="projects", model=Project, create_schema=ProjectIn)
+_register_crud(path="projects", model=Project, create_schema=ProjectIn, id_source_field="name")
 _register_crud(path="school-reports", model=SchoolReport, create_schema=SchoolReportIn)
 _register_crud(path="notes", model=Note, create_schema=NoteIn)

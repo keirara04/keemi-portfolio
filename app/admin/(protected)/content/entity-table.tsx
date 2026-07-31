@@ -218,7 +218,9 @@ function EntityForm({
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-2.5">
-      {config.fields.map((field) => (
+      {config.fields.map((field) => {
+        if (field.hiddenOnCreate && submitLabel === "Create") return null;
+        return (
         <div key={field.name}>
           <label className="mb-1 block text-xs font-medium text-zinc-600 dark:text-zinc-400">
             {field.label}
@@ -237,7 +239,8 @@ function EntityForm({
             />
           )}
         </div>
-      ))}
+        );
+      })}
       {error && <p className="text-xs text-red-600 dark:text-red-400">{error}</p>}
       <div className="flex gap-2 pt-1">
         <button
@@ -295,7 +298,7 @@ export function EntityTable({ config }: { config: EntityConfig }) {
   };
 
   const handleUpdate = async (id: string, values: FormValues) => {
-    const response = await fetch(`${API_BASE_URL}${config.apiPath}/${id}`, {
+    const response = await fetch(`${API_BASE_URL}${config.apiPath}/${encodeURIComponent(id)}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formValuesToPayload(values, config.fields)),
@@ -307,7 +310,9 @@ export function EntityTable({ config }: { config: EntityConfig }) {
 
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this item?")) return;
-    const response = await fetch(`${API_BASE_URL}${config.apiPath}/${id}`, { method: "DELETE" });
+    const response = await fetch(`${API_BASE_URL}${config.apiPath}/${encodeURIComponent(id)}`, {
+      method: "DELETE",
+    });
     if (response.ok) await load();
   };
 

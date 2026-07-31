@@ -106,7 +106,7 @@ class InterestIn(BaseModel):
 
 
 class ProjectIn(BaseModel):
-    id: str
+    id: str | None = None
     name: str
     tagline: str
     description: str
