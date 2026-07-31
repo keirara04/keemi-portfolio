@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "/api";
+import { API_BASE_URL } from "@/lib/api-base-url";
 
 const FIELDS: { name: string; label: string; type: "text" | "textarea" }[] = [
   { name: "name", label: "Name", type: "text" },

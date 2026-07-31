@@ -13,6 +13,7 @@ import {
   type SchoolReport,
   type Note,
 } from "./content";
+import { API_BASE_URL } from "./api-base-url";
 
 type Profile = typeof staticProfile;
 
@@ -37,8 +38,6 @@ const STATIC_CONTENT: ContentState = {
 };
 
 const ContentContext = createContext<ContentState>(STATIC_CONTENT);
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "/api";
 
 async function fetchJson<T>(path: string): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${path}`);
