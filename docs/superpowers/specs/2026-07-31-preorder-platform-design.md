@@ -1,8 +1,37 @@
-# Preorder Website Design
+# ninadough Preorder Website Design
 
 **Status:** Approved design brief  
 **Date:** 2026-07-31  
-**Purpose:** A small-business preorder website for a baker/seller. Customers browse a controlled catalogue, select predefined product options, choose an order date and fulfilment method, and place orders without exceeding the seller's daily capacity.
+**Official brand:** ninadough
+**Purpose:** A mobile-first preorder website for ninadough, a small bakery/seller. Customers browse a controlled catalogue, select predefined product options, choose an order date and fulfilment method, and place orders without exceeding the seller's daily capacity.
+
+## Brand Assets and Visual Direction
+
+### Official logo
+
+- **Source asset:** [`public/brand/ninadough-logo.svg`](../../../public/brand/ninadough-logo.svg)
+- **Original source supplied by client:** `/Users/user/Downloads/Artboard 1.svg`
+- Treat this SVG as the source of truth. Do not redraw, rasterize, recolour, or substitute the logo without client approval.
+- Use the SVG directly in the storefront header, order confirmation pages, transactional email header (where SVG is supported), and admin login/dashboard branding. Provide descriptive `alt="ninadough"` text.
+- Keep generous clear space around the logo. It has a wide `1300 × 400` viewBox, so use `width`/`height` constraints rather than cropping it into a square.
+
+### Extracted brand palette
+
+| Token | Hex | Intended use |
+|---|---|---|
+| `brand-pink` | `#E57ACB` | Primary calls to action, selected states, key highlights. |
+| `brand-gold` | `#E5A851` | Secondary accent, availability/cutoff callouts. |
+| `brand-ivory` | `#FEFEFD` | Light logo/base surface. |
+| `brand-cocoa` | `#4A2C22` | Recommended accessible dark text/navigation colour; validate contrast in implementation. |
+| `brand-cream` | `#FFF8F1` | Recommended page background. |
+
+### Mobile-first UI direction
+
+- The customer storefront is designed primarily for a phone screen. Keep the primary actions in a sticky bottom action area, use 44px-or-larger tap targets, and avoid dense tables or hover-only interactions.
+- The visual tone is warm, handmade, and dependable: cream surfaces, cocoa text, ninadough pink for primary actions, and gold for gentle alerts. Product photography should do most of the visual work.
+- The client controls every purchasable option. Product size/flavour uses explicit buttons or pills; customer free-text customisation must not appear in checkout.
+- Admin is also responsive: phone-first for daily order management, with a tablet/laptop layout for product editing and larger order lists. Desktop polish is valuable but not a customer-storefront priority.
+- Use the mockups from this discussion only as visual direction. The final implementation must use the real ninadough logo, Malaysian Ringgit (`RM`) formatting, and the client’s actual delivery/pickup information.
 
 ## 1. Product Goal
 
@@ -26,6 +55,17 @@ The customer has not decided whether final ordering/payment should happen on the
 - Automatic expiry of unconfirmed WhatsApp reservations.
 - Basic order confirmation/status notifications by WhatsApp link and/or email.
 - Secure production deployment, automated testing, and automated deployment from GitHub.
+
+### Mobile screens required in version 1
+
+- Storefront/catalogue: logo header, product cards, selected product options, cart access.
+- Product detail: photo gallery, predefined variants, quantity control, allergen information, add-to-cart action.
+- Cart: editable quantities, preorder date, cutoff notice, pickup/delivery selector, total, and WhatsApp order path when enabled.
+- Checkout/review: customer contact fields, delivery address only when delivery is selected, server-calculated order summary, website/WhatsApp path.
+- Order submitted: clear order reference, the owner-confirmation/payment next step, and contact link.
+- Admin daily dashboard: incoming orders, status, fulfilment method, capacity used/remaining.
+- Admin preorder calendar: open/full/closed dates, daily capacity, cutoff, and pickup/delivery availability controls.
+- Admin product editor: product images, active state, seller-defined size/flavour options, variant price adjustments, and capacity units.
 
 ### Explicitly out of scope for version 1
 
@@ -175,6 +215,8 @@ If capacity cannot be reserved, return a clear "This date has just become full; 
 For version 1, define whether capacity is measured as **number of orders** or **number of product units/trays**. The recommended model is a configurable `capacity_units` value per product/variant so a large order can consume more of a day's capacity than a small order.
 
 ## 9. Data Model
+
+The authoritative migration order, PostgreSQL columns, constraints, indexes, capacity transaction, and future-only schema extensions are documented separately in [the ninadough database schema blueprint](2026-07-31-preorder-database-schema.md). That document is part of this design and must be followed when implementing Laravel migrations.
 
 The database uses Laravel migrations, foreign keys, timestamps, and appropriate indexes. Monetary amounts are stored as integer cents/sen to avoid floating-point errors.
 
