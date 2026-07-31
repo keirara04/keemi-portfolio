@@ -3,8 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
 import type { EntityConfig, FieldConfig } from "./entity-configs";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "/api";
+import { API_BASE_URL } from "@/lib/api-base-url";
 
 type Row = Record<string, unknown> & { id: string };
 type Screenshot = { src: string; alt: string };
