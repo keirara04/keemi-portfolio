@@ -56,6 +56,7 @@ jobs:
           echo "HTTP status: $response"
           echo "Response body:"
           cat /tmp/webhook_response.txt
-          if [ "$response" -ge 400 ]; then
+          if [ "$response" != "200" ] || grep -q '"message"' /tmp/webhook_response.txt; then
+            echo "::error::Dokploy webhook did not confirm success (status $response)"
             exit 1
           fi
