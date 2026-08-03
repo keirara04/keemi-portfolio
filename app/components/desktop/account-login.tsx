@@ -18,7 +18,7 @@ export function AccountLoginScreen({ onSelect }: { onSelect: () => void }) {
       }}
     >
       <Image
-        src="/portfolio-homebackground.jpg"
+        src="https://keemi-spaces-1.sgp1.cdn.digitaloceanspaces.com/images/portfolio-homebackground.jpg"
         alt=""
         fill
         priority

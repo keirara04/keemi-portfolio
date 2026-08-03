@@ -34,8 +34,8 @@ function installMockImage(outcomeFor: (src: string) => MockImageOutcome) {
 
 describe("PRELOAD_IMAGE_URLS", () => {
   it("includes the wallpaper and profile photo", () => {
-    expect(PRELOAD_IMAGE_URLS).toContain("/portfolio-homebackground.jpg");
-    expect(PRELOAD_IMAGE_URLS).toContain("/portfolio-profile.jpg");
+    expect(PRELOAD_IMAGE_URLS).toContain("https://keemi-spaces-1.sgp1.cdn.digitaloceanspaces.com/images/portfolio-homebackground.jpg");
+    expect(PRELOAD_IMAGE_URLS).toContain("https://keemi-spaces-1.sgp1.cdn.digitaloceanspaces.com/images/portfolio-profile.jpg");
   });
 
   it("includes every project screenshot", () => {
