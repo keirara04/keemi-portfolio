@@ -52,4 +52,10 @@ jobs:
             echo "::warning::DOKPLOY_DEPLOY_WEBHOOK_URL secret not set — skipping deploy trigger. See .github/workflows/ci.yml for setup."
             exit 0
           fi
-          curl -fsSL -X POST "$WEBHOOK_URL"
+          response=$(curl -sS -o /tmp/webhook_response.txt -w "%{http_code}" "$WEBHOOK_URL")
+          echo "HTTP status: $response"
+          echo "Response body:"
+          cat /tmp/webhook_response.txt
+          if [ "$response" -ge 400 ]; then
+            exit 1
+          fi
