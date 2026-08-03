@@ -45,7 +45,7 @@ export function LockScreen({ onUnlock }: { onUnlock: () => void }) {
           className="mx-6 mt-10 flex w-[calc(100%-3rem)] items-center gap-3 rounded-2xl bg-white/80 p-3 shadow-lg backdrop-blur-xl dark:bg-zinc-800/80"
         >
           <Image
-            src="/portfolio-profile.jpg"
+            src="https://keemi-spaces-1.sgp1.cdn.digitaloceanspaces.com/images/portfolio-profile.jpg"
             alt=""
             width={38}
             height={38}

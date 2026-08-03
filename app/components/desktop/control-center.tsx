@@ -51,7 +51,7 @@ export function ControlCenter({
   const wallpaperPreviews = [
     <Image
       key="photo"
-      src="/portfolio-homebackground.jpg"
+      src="https://keemi-spaces-1.sgp1.cdn.digitaloceanspaces.com/images/portfolio-homebackground.jpg"
       alt=""
       fill
       sizes="96px"

@@ -44,7 +44,7 @@ function QuickLook({ name, onClose }: { name: string; onClose: () => void }) {
         className="relative h-[70vh] w-[min(80vw,32rem)] overflow-hidden rounded-2xl shadow-2xl"
       >
         <Image
-          src="/portfolio-profile.jpg"
+          src="https://keemi-spaces-1.sgp1.cdn.digitaloceanspaces.com/images/portfolio-profile.jpg"
           alt={name}
           fill
           sizes="80vw"
@@ -83,7 +83,7 @@ function TiltPhoto({ name, onOpen }: { name: string; onOpen: () => void }) {
       aria-label="View photo fullscreen"
     >
       <Image
-        src="/portfolio-profile.jpg"
+        src="https://keemi-spaces-1.sgp1.cdn.digitaloceanspaces.com/images/portfolio-profile.jpg"
         alt={name}
         fill
         sizes="96px"

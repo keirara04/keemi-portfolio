@@ -307,7 +307,7 @@ export function AboutAppIcon({ className }: { className?: string }) {
 export function ProfileTileIcon({ className }: { className?: string }) {
   return (
     <span className={`relative block overflow-hidden ${className ?? ""}`}>
-      <Image src="/portfolio-profile.jpg" alt="" fill sizes="80px" className="object-cover" />
+      <Image src="https://keemi-spaces-1.sgp1.cdn.digitaloceanspaces.com/images/portfolio-profile.jpg" alt="" fill sizes="80px" className="object-cover" />
     </span>
   );
 }

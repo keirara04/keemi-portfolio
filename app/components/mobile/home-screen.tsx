@@ -86,7 +86,7 @@ export function HomeScreen({
         aria-label="Open quote"
       >
         <Image
-          src="/portfolio-profile.jpg"
+          src="https://keemi-spaces-1.sgp1.cdn.digitaloceanspaces.com/images/portfolio-profile.jpg"
           alt=""
           width={52}
           height={52}
