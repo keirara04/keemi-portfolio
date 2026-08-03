@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useContent } from "@/lib/content-repo";
 import { submitContactForm } from "@/lib/backend";
+import { trackEvent } from "@/lib/analytics-client";
 import { GitHubIcon, LinkedInIcon } from "../icons";
 
 const SUBJECT_PRESETS = ["Freelance project", "Collaboration", "Just saying hi"];
@@ -34,6 +35,7 @@ export function ContactWindowContent() {
         body,
       });
       setStatus("sent");
+      trackEvent("contact_submitted", { subject: subject || "Hello from your portfolio" });
     } catch {
       setStatus("error");
       openMailClient();

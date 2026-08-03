@@ -13,6 +13,7 @@ import {
   GraduationCap,
   StickyNote,
   ShieldCheck,
+  BarChart3,
   type LucideIcon,
 } from "lucide-react";
 import { ENTITY_CONFIGS, ENTITY_ORDER } from "./content/entity-configs";
@@ -81,6 +82,12 @@ export function Sidebar() {
             label="Contact Submissions"
             icon={Mail}
             active={pathname === "/admin/contact"}
+          />
+          <NavLink
+            href="/admin/analytics"
+            label="Analytics"
+            icon={BarChart3}
+            active={pathname === "/admin/analytics"}
           />
 
           <p className="mt-3 mb-1 px-3 text-[11px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">

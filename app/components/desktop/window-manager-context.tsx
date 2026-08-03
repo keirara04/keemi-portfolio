@@ -10,6 +10,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { trackEvent } from "@/lib/analytics-client";
 
 // useLayoutEffect runs synchronously before paint (useEffect runs after), so
 // the mobile check below resolves before the browser ever paints the
@@ -118,8 +119,13 @@ export function WindowManagerProvider({ children }: { children: React.ReactNode 
       } else {
         delete openOrigins.current[config.id];
       }
+      // Captured for the trackEvent call below — reading it here (rather than
+      // via a ref/outer `windows` dependency) keeps openWindow's identity
+      // stable across renders, which other effects rely on.
+      let reopened = false;
       setWindows((prev) => {
         const existing = prev[config.id];
+        reopened = Boolean(existing);
         if (existing) {
           return {
             ...prev,
@@ -144,6 +150,7 @@ export function WindowManagerProvider({ children }: { children: React.ReactNode 
           },
         };
       });
+      trackEvent("window_open", { windowId: config.id, title: config.title, reopened });
     },
     [nextZIndex]
   );

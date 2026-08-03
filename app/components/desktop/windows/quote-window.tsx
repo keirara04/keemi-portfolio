@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { whatsappUrl } from "@/lib/content";
 import { useContent } from "@/lib/content-repo";
+import { trackEvent } from "@/lib/analytics-client";
 import {
   CURRENCY_LABEL,
   bundles,
@@ -213,12 +214,28 @@ export function QuoteWindowContent() {
             href={whatsappUrl(profile.whatsapp, summaryMessage)}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() =>
+              trackEvent("quote_cta_click", {
+                channel: "whatsapp",
+                projectTypeId,
+                estimateMin: estimate?.min,
+                estimateMax: estimate?.max,
+              })
+            }
             className="flex flex-1 items-center justify-center gap-1.5 rounded-md bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-500"
           >
             WhatsApp
           </a>
           <a
             href={mailtoHref}
+            onClick={() =>
+              trackEvent("quote_cta_click", {
+                channel: "email",
+                projectTypeId,
+                estimateMin: estimate?.min,
+                estimateMax: estimate?.max,
+              })
+            }
             className="flex flex-1 items-center justify-center gap-1.5 rounded-md bg-sky-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-500"
           >
             Email
