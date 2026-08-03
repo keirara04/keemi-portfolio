@@ -77,7 +77,7 @@ export function EzzyForm({ password, defaults }: { password: string; defaults: E
         <p className="text-xs text-zinc-500 dark:text-zinc-400">{defaults.businessName || "EZ Studio"}</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         <label>
           <span className={labelClass}>Date</span>
           <input type="date" className={inputClass} value={date} onChange={(e) => setDate(e.target.value)} />
@@ -134,7 +134,7 @@ export function EzzyForm({ password, defaults }: { password: string; defaults: E
 
       <div>
         <p className={labelClass}>Contact & Payment</p>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           <input
             className={inputClass}
             placeholder="Email"

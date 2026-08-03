@@ -111,7 +111,7 @@ export function HakeemiForm({ password, defaults }: { password: string; defaults
 
       <div>
         <p className={labelClass}>Your Details (shown in header)</p>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           <input
             className={`${inputClass} col-span-2`}
             placeholder="Business / your name"
@@ -139,7 +139,7 @@ export function HakeemiForm({ password, defaults }: { password: string; defaults
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         <label>
           <span className={labelClass}>Quote Ref</span>
           <input className={inputClass} value={quoteRef} onChange={(e) => setQuoteRef(e.target.value)} />
@@ -178,7 +178,7 @@ export function HakeemiForm({ password, defaults }: { password: string; defaults
 
       <div>
         <p className={labelClass}>Client & Programme</p>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           <input
             className={inputClass}
             placeholder="Client organisation"
@@ -226,7 +226,7 @@ export function HakeemiForm({ password, defaults }: { password: string; defaults
         />
       </label>
 
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         <label>
           <span className={labelClass}>Tax / SST %</span>
           <input
@@ -263,7 +263,7 @@ export function HakeemiForm({ password, defaults }: { password: string; defaults
 
       <div>
         <p className={labelClass}>Payment & Administration</p>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           <input
             className={inputClass}
             placeholder="Bank name"
