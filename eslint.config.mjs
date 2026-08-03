@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Local git worktrees (gitignored) shouldn't be picked up by a bare `eslint .`
+    ".claude/**",
   ]),
 ]);
 
