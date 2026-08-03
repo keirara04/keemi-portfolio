@@ -52,6 +52,21 @@ export type EzzyInvoiceData = {
   paymentInfo: string;
 };
 
+export type WebInvoiceData = {
+  businessName: string;
+  date: string;
+  clientCompanyName: string;
+  clientAddressLines: string;
+  lineItems: LineItem[];
+  notes: string;
+  taxRatePercent: number;
+  contactEmail: string;
+  contactTel: string;
+  paymentInfo: string;
+};
+
+export type HakeemiInvoiceType = "tour" | "web";
+
 export type InvoiceProfile = "hakeemi" | "ezzy";
 
 const PROFILE_PASSWORD_ENV: Record<InvoiceProfile, string> = {

@@ -1,16 +1,22 @@
 import { readFile } from "fs/promises";
 import path from "path";
 import { matchProfile } from "@/lib/invoice";
-import type { EzzyInvoiceData, HakeemiInvoiceData, LineItem } from "@/lib/invoice";
+import type { EzzyInvoiceData, HakeemiInvoiceData, LineItem, WebInvoiceData } from "@/lib/invoice";
 import { renderHakeemiInvoiceHtml } from "@/lib/invoice-templates/hakeemi";
 import { renderEzzyInvoiceHtml } from "@/lib/invoice-templates/ezzy";
 import type { EzzyInvoiceFonts } from "@/lib/invoice-templates/ezzy";
+import { renderWebInvoiceHtml } from "@/lib/invoice-templates/web-invoice";
 
 export const runtime = "nodejs";
 
 const EZZY_LOGO_CANDIDATES = [
   { file: path.join(/*turbopackIgnore: true*/ process.cwd(), "public", "invoice-assets", "ezzy-logo.svg"), mime: "image/svg+xml" },
   { file: path.join(/*turbopackIgnore: true*/ process.cwd(), "public", "invoice-assets", "ezzy-logo.png"), mime: "image/png" },
+];
+
+const WEB_INVOICE_LOGO_CANDIDATES = [
+  { file: path.join(/*turbopackIgnore: true*/ process.cwd(), "public", "invoice-assets", "web-invoice-logo.svg"), mime: "image/svg+xml" },
+  { file: path.join(/*turbopackIgnore: true*/ process.cwd(), "public", "invoice-assets", "web-invoice-logo.png"), mime: "image/png" },
 ];
 
 function isNonEmptyString(value: unknown): value is string {
@@ -95,8 +101,31 @@ function parseEzzyInvoice(body: Record<string, unknown>): EzzyInvoiceData | null
   };
 }
 
-async function readEzzyLogoBase64(): Promise<string | undefined> {
-  for (const candidate of EZZY_LOGO_CANDIDATES) {
+function parseWebInvoice(body: Record<string, unknown>): WebInvoiceData | null {
+  const lineItems = parseLineItems(body.lineItems);
+  if (!lineItems) return null;
+  if (!isNonEmptyString(body.businessName) || !isNonEmptyString(body.date) || !isNonEmptyString(body.clientCompanyName)) {
+    return null;
+  }
+  const taxRatePercent = Number(body.taxRatePercent ?? 0);
+  if (!Number.isFinite(taxRatePercent)) return null;
+
+  return {
+    businessName: body.businessName as string,
+    date: body.date as string,
+    clientCompanyName: body.clientCompanyName as string,
+    clientAddressLines: (body.clientAddressLines as string) ?? "",
+    lineItems,
+    notes: (body.notes as string) ?? "",
+    taxRatePercent,
+    contactEmail: (body.contactEmail as string) ?? "",
+    contactTel: (body.contactTel as string) ?? "",
+    paymentInfo: (body.paymentInfo as string) ?? "",
+  };
+}
+
+async function readLogoBase64(candidates: typeof EZZY_LOGO_CANDIDATES): Promise<string | undefined> {
+  for (const candidate of candidates) {
     try {
       const buffer = await readFile(candidate.file);
       return `data:${candidate.mime};base64,${buffer.toString("base64")}`;
@@ -175,7 +204,13 @@ export async function POST(request: Request) {
     let html: string;
     let filename: string;
 
-    if (profile === "hakeemi") {
+    if (profile === "hakeemi" && body.invoiceType === "web") {
+      const data = parseWebInvoice(invoice as Record<string, unknown>);
+      if (!data) return Response.json({ error: "Invalid invoice data" }, { status: 400 });
+      const logo = await readLogoBase64(WEB_INVOICE_LOGO_CANDIDATES);
+      html = renderWebInvoiceHtml(data, logo);
+      filename = `web-invoice-${data.date}.pdf`;
+    } else if (profile === "hakeemi") {
       const data = parseHakeemiInvoice(invoice as Record<string, unknown>);
       if (!data) return Response.json({ error: "Invalid invoice data" }, { status: 400 });
       html = renderHakeemiInvoiceHtml(data);
@@ -183,7 +218,7 @@ export async function POST(request: Request) {
     } else {
       const data = parseEzzyInvoice(invoice as Record<string, unknown>);
       if (!data) return Response.json({ error: "Invalid invoice data" }, { status: 400 });
-      const [logo, fonts] = await Promise.all([readEzzyLogoBase64(), readEzzyFonts()]);
+      const [logo, fonts] = await Promise.all([readLogoBase64(EZZY_LOGO_CANDIDATES), readEzzyFonts()]);
       html = renderEzzyInvoiceHtml(data, logo, fonts);
       filename = `ezzy-invoice-${data.date}.pdf`;
     }

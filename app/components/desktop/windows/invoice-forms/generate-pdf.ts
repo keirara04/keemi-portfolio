@@ -1,15 +1,16 @@
-import type { InvoiceProfile } from "@/lib/invoice";
+import type { HakeemiInvoiceType, InvoiceProfile } from "@/lib/invoice";
 
 async function fetchInvoicePdf(
   mode: "download" | "preview",
   profile: InvoiceProfile,
   password: string,
-  invoice: Record<string, unknown>
+  invoice: Record<string, unknown>,
+  invoiceType?: HakeemiInvoiceType
 ): Promise<{ blob: Blob; filename: string }> {
   const response = await fetch("/invoice-tool/generate", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ password, profile, invoice, mode }),
+    body: JSON.stringify({ password, profile, invoice, mode, invoiceType }),
   });
 
   if (!response.ok) {
@@ -25,9 +26,10 @@ async function fetchInvoicePdf(
 export async function generateInvoicePdf(
   profile: InvoiceProfile,
   password: string,
-  invoice: Record<string, unknown>
+  invoice: Record<string, unknown>,
+  invoiceType?: HakeemiInvoiceType
 ): Promise<void> {
-  const { blob, filename } = await fetchInvoicePdf("download", profile, password, invoice);
+  const { blob, filename } = await fetchInvoicePdf("download", profile, password, invoice, invoiceType);
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
@@ -41,13 +43,14 @@ export async function generateInvoicePdf(
 export async function previewInvoicePdf(
   profile: InvoiceProfile,
   password: string,
-  invoice: Record<string, unknown>
+  invoice: Record<string, unknown>,
+  invoiceType?: HakeemiInvoiceType
 ): Promise<void> {
   // Open the tab synchronously on the click itself so popup blockers don't
   // treat the post-fetch window.open as an unsolicited popup.
   const previewTab = window.open("", "_blank");
   try {
-    const { blob } = await fetchInvoicePdf("preview", profile, password, invoice);
+    const { blob } = await fetchInvoicePdf("preview", profile, password, invoice, invoiceType);
     const url = URL.createObjectURL(blob);
     if (previewTab) {
       previewTab.location.href = url;

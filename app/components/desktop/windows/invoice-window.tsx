@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import type { EzzyDefaults, HakeemiDefaults } from "@/lib/invoice-defaults";
-import type { InvoiceProfile } from "@/lib/invoice";
+import type { HakeemiInvoiceType, InvoiceProfile } from "@/lib/invoice";
 import { HakeemiForm } from "./invoice-forms/hakeemi-form";
 import { EzzyForm } from "./invoice-forms/ezzy-form";
+import { WebInvoiceForm } from "./invoice-forms/web-invoice-form";
 
 type Unlocked =
   | { profile: "hakeemi"; password: string; defaults: HakeemiDefaults }
@@ -15,6 +16,7 @@ export function InvoiceWindowContent() {
   const [error, setError] = useState<string | null>(null);
   const [isChecking, setIsChecking] = useState(false);
   const [unlocked, setUnlocked] = useState<Unlocked | null>(null);
+  const [hakeemiInvoiceType, setHakeemiInvoiceType] = useState<HakeemiInvoiceType | null>(null);
 
   const handleUnlock = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,6 +83,38 @@ export function InvoiceWindowContent() {
   }
 
   if (unlocked.profile === "hakeemi") {
+    if (!hakeemiInvoiceType) {
+      return (
+        <div className="flex h-full flex-col items-center justify-center gap-3 text-center">
+          <p className="text-sm font-semibold text-zinc-900 dark:text-white">What are you invoicing for?</p>
+          <div className="flex w-full max-w-[260px] flex-col gap-2">
+            <button
+              type="button"
+              onClick={() => setHakeemiInvoiceType("tour")}
+              className="rounded-md border border-sky-600/40 bg-sky-50 px-4 py-3 text-left text-sm font-semibold text-sky-700 transition hover:bg-sky-100 dark:border-sky-400/40 dark:bg-sky-500/15 dark:text-sky-300 dark:hover:bg-sky-500/25"
+            >
+              Tour Invoice
+              <span className="mt-0.5 block text-xs font-normal text-zinc-500 dark:text-zinc-400">
+                Quotation-style, for tour/coordination work
+              </span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setHakeemiInvoiceType("web")}
+              className="rounded-md border border-sky-600/40 bg-sky-50 px-4 py-3 text-left text-sm font-semibold text-sky-700 transition hover:bg-sky-100 dark:border-sky-400/40 dark:bg-sky-500/15 dark:text-sky-300 dark:hover:bg-sky-500/25"
+            >
+              Web Invoice
+              <span className="mt-0.5 block text-xs font-normal text-zinc-500 dark:text-zinc-400">
+                Simple item/total invoice, for web dev work
+              </span>
+            </button>
+          </div>
+        </div>
+      );
+    }
+    if (hakeemiInvoiceType === "web") {
+      return <WebInvoiceForm password={unlocked.password} defaults={unlocked.defaults} />;
+    }
     return <HakeemiForm password={unlocked.password} defaults={unlocked.defaults} />;
   }
   return <EzzyForm password={unlocked.password} defaults={unlocked.defaults} />;
