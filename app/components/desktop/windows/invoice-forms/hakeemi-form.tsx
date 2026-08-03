@@ -23,6 +23,10 @@ function plusDaysIso(days: number) {
 }
 
 export function HakeemiForm({ password, defaults }: { password: string; defaults: HakeemiDefaults }) {
+  const [businessName, setBusinessName] = useState(defaults.businessName);
+  const [businessTitle, setBusinessTitle] = useState("Independent Student Coordinator & Local Liaison");
+  const [businessEmail, setBusinessEmail] = useState(defaults.email);
+  const [businessPhone, setBusinessPhone] = useState(defaults.phone);
   const [quoteRef, setQuoteRef] = useState(() => `QT-${Date.now()}`);
   const [date, setDate] = useState(todayIso());
   const [validity, setValidity] = useState(plusDaysIso(30));
@@ -49,6 +53,10 @@ export function HakeemiForm({ password, defaults }: { password: string; defaults
   const totals = calculateTotals(lineItems, taxRatePercent);
 
   const buildInvoicePayload = () => ({
+    businessName,
+    businessTitle,
+    businessEmail,
+    businessPhone,
     quoteRef,
     date,
     validity,
@@ -99,6 +107,36 @@ export function HakeemiForm({ password, defaults }: { password: string; defaults
       <div>
         <p className="text-base font-semibold text-zinc-900 dark:text-white">Quotation Generator</p>
         <p className="text-xs text-zinc-500 dark:text-zinc-400">{defaults.businessName || "Hakeemi"}</p>
+      </div>
+
+      <div>
+        <p className={labelClass}>Your Details (shown in header)</p>
+        <div className="grid grid-cols-2 gap-2">
+          <input
+            className={`${inputClass} col-span-2`}
+            placeholder="Business / your name"
+            value={businessName}
+            onChange={(e) => setBusinessName(e.target.value)}
+          />
+          <input
+            className={`${inputClass} col-span-2`}
+            placeholder="Title / role"
+            value={businessTitle}
+            onChange={(e) => setBusinessTitle(e.target.value)}
+          />
+          <input
+            className={inputClass}
+            placeholder="Email"
+            value={businessEmail}
+            onChange={(e) => setBusinessEmail(e.target.value)}
+          />
+          <input
+            className={inputClass}
+            placeholder="Phone (optional)"
+            value={businessPhone}
+            onChange={(e) => setBusinessPhone(e.target.value)}
+          />
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-2">

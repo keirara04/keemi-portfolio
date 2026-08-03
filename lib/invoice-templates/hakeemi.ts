@@ -107,9 +107,10 @@ export function renderHakeemiInvoiceHtml(data: HakeemiInvoiceData): string {
         <div class="tagline">${escapeHtml(data.projectName)}</div>
       </div>
       <div class="identity">
-        <div class="name">Muhammad Hakeemi Bin Mohd Ridza</div>
-        <div>Independent Student Coordinator &amp; Local Liaison</div>
-        <div>hakeemiridza@gmail.com</div>
+        <div class="name">${escapeHtml(data.businessName)}</div>
+        ${data.businessTitle ? `<div>${escapeHtml(data.businessTitle)}</div>` : ""}
+        ${data.businessEmail ? `<div>${escapeHtml(data.businessEmail)}</div>` : ""}
+        ${data.businessPhone ? `<div>${escapeHtml(data.businessPhone)}</div>` : ""}
       </div>
     </div>
 

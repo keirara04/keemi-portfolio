@@ -15,6 +15,10 @@ export type InvoiceTotals = {
 };
 
 export type HakeemiInvoiceData = {
+  businessName: string;
+  businessTitle: string;
+  businessEmail: string;
+  businessPhone: string;
   quoteRef: string;
   date: string;
   validity: string;

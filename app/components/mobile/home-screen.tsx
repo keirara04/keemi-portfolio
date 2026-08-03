@@ -8,6 +8,7 @@ import {
   aboutWindowConfig,
   contactWindowConfig,
   homeworkWindowConfig,
+  invoiceWindowConfig,
   minesweeperWindowConfig,
   notesWindowConfig,
   projectsWindowConfig,
@@ -18,6 +19,7 @@ import {
   FinderFaceIcon,
   GitHubIcon,
   HomeworkAppIcon,
+  InvoiceAppIcon,
   LinkedInIcon,
   MailAppIcon,
   MinesweeperAppIcon,
@@ -129,6 +131,9 @@ export function HomeScreen({
         </AppIcon>
         <AppIcon label="Homework" onOpen={(o) => onLaunch(homeworkWindowConfig, o)}>
           <HomeworkAppIcon className="h-full w-full" />
+        </AppIcon>
+        <AppIcon label="Invoice" onOpen={(o) => onLaunch(invoiceWindowConfig, o)}>
+          <InvoiceAppIcon className="h-full w-full" />
         </AppIcon>
       </div>
 

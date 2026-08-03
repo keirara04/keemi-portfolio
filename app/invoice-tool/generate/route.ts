@@ -41,7 +41,7 @@ function parseLineItems(value: unknown): LineItem[] | null {
 function parseHakeemiInvoice(body: Record<string, unknown>): HakeemiInvoiceData | null {
   const lineItems = parseLineItems(body.lineItems);
   if (!lineItems) return null;
-  const requiredStrings = ["quoteRef", "date", "validity", "contractCurrency", "clientOrg", "clientAttn", "projectName"];
+  const requiredStrings = ["businessName", "quoteRef", "date", "validity", "contractCurrency", "clientOrg", "clientAttn", "projectName"];
   for (const field of requiredStrings) {
     if (!isNonEmptyString(body[field])) return null;
   }
@@ -49,6 +49,10 @@ function parseHakeemiInvoice(body: Record<string, unknown>): HakeemiInvoiceData 
   if (!Number.isFinite(taxRatePercent)) return null;
 
   return {
+    businessName: body.businessName as string,
+    businessTitle: (body.businessTitle as string) ?? "",
+    businessEmail: (body.businessEmail as string) ?? "",
+    businessPhone: (body.businessPhone as string) ?? "",
     quoteRef: body.quoteRef as string,
     date: body.date as string,
     validity: body.validity as string,
