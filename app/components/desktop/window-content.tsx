@@ -25,6 +25,10 @@ const MinesweeperWindowContent = dynamic(
   () => import("./windows/minesweeper-window").then((m) => m.MinesweeperWindowContent),
   { ssr: false }
 );
+const InvoiceWindowContent = dynamic(
+  () => import("./windows/invoice-window").then((m) => m.InvoiceWindowContent),
+  { ssr: false }
+);
 
 // memo: window drags update context every pointer-move, re-rendering each
 // Window's chrome; this keeps the (heavier) content subtree out of that churn
@@ -37,6 +41,7 @@ export const WindowContentFor = memo(function WindowContentFor({ id }: { id: str
   if (id === "quote") return <QuoteWindowContent />;
   if (id === "homework") return <HomeworkWindowContent />;
   if (id === "minesweeper") return <MinesweeperWindowContent />;
+  if (id === "invoice") return <InvoiceWindowContent />;
   if (id.startsWith("project-")) {
     return <ProjectDetailWindowContent projectId={id.replace("project-", "")} />;
   }

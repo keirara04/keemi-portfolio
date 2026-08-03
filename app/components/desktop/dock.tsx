@@ -15,6 +15,7 @@ import {
   AboutAppIcon,
   FinderFaceIcon,
   GitHubIcon,
+  InvoiceAppIcon,
   LinkedInIcon,
   MailAppIcon,
   MinesweeperAppIcon,
@@ -48,6 +49,9 @@ function DockAppIcon({ windowId }: { windowId: string }) {
   }
   if (windowId === "contact") {
     return <MailAppIcon className="h-full w-full" />;
+  }
+  if (windowId === "invoice") {
+    return <InvoiceAppIcon className="h-full w-full" />;
   }
   return null;
 }

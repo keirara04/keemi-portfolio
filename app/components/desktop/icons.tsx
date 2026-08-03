@@ -271,6 +271,30 @@ export function QuoteAppIcon({ className }: { className?: string }) {
   );
 }
 
+export function InvoiceAppIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 100 100" aria-hidden className={className}>
+      <defs>
+        <linearGradient id="invoice-bg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#fb7185" />
+          <stop offset="1" stopColor="#be123c" />
+        </linearGradient>
+      </defs>
+      <rect width="100" height="100" rx="22" fill="url(#invoice-bg)" />
+      <path
+        d="M26 16 H68 L80 28 V84 Q80 88 76 88 H26 Q22 88 22 84 V20 Q22 16 26 16 Z"
+        fill="#ffffff"
+      />
+      <path d="M68 16 V24 Q68 28 72 28 H80 Z" fill="#fecdd3" />
+      <g stroke="#e11d48" strokeWidth="4" strokeLinecap="round">
+        <line x1="32" y1="42" x2="64" y2="42" />
+        <line x1="32" y1="54" x2="64" y2="54" />
+        <line x1="32" y1="66" x2="50" y2="66" />
+      </g>
+    </svg>
+  );
+}
+
 export function ChevronLeftIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 10 16" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden className={className}>

@@ -9,6 +9,7 @@ export const NOTES_WINDOW_ID = "notes";
 export const MINESWEEPER_WINDOW_ID = "minesweeper";
 export const QUOTE_WINDOW_ID = "quote";
 export const HOMEWORK_WINDOW_ID = "homework";
+export const INVOICE_WINDOW_ID = "invoice";
 export const projectWindowId = (projectId: string) => `project-${projectId}`;
 
 export const aboutWindowConfig: WindowConfig = {
@@ -76,6 +77,14 @@ export const homeworkWindowConfig: WindowConfig = {
   minSize: { width: 340, height: 300 },
 };
 
+export const invoiceWindowConfig: WindowConfig = {
+  id: INVOICE_WINDOW_ID,
+  title: "Invoice Generator",
+  defaultPosition: { x: 200, y: 60 },
+  defaultSize: { width: 640, height: 720 },
+  minSize: { width: 460, height: 540 },
+};
+
 export function projectWindowConfig(projectId: string, index: number): WindowConfig {
   const project = projects.find((p) => p.id === projectId);
   return {
@@ -96,6 +105,7 @@ export const windowConfigById: Record<string, WindowConfig> = {
   [MINESWEEPER_WINDOW_ID]: minesweeperWindowConfig,
   [QUOTE_WINDOW_ID]: quoteWindowConfig,
   [HOMEWORK_WINDOW_ID]: homeworkWindowConfig,
+  [INVOICE_WINDOW_ID]: invoiceWindowConfig,
 };
 
 export const dockApps = [
@@ -106,4 +116,5 @@ export const dockApps = [
   { windowId: TERMINAL_WINDOW_ID, label: "Terminal" },
   { windowId: MINESWEEPER_WINDOW_ID, label: "Minesweeper" },
   { windowId: CONTACT_WINDOW_ID, label: "Contact" },
+  { windowId: INVOICE_WINDOW_ID, label: "Invoice Generator" },
 ];
