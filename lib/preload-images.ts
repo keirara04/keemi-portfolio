@@ -1,8 +1,8 @@
 import { projects } from "./content";
 
 export const PRELOAD_IMAGE_URLS: string[] = [
-  "/portfolio-homebackground.jpg",
-  "/portfolio-profile.jpg",
+  "https://keemi-spaces-1.sgp1.cdn.digitaloceanspaces.com/images/portfolio-homebackground.jpg",
+  "https://keemi-spaces-1.sgp1.cdn.digitaloceanspaces.com/images/portfolio-profile.jpg",
   ...projects.flatMap((project) => project.screenshots?.map((shot) => shot.src) ?? []),
 ];
 
