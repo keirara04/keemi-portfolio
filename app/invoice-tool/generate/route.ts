@@ -17,6 +17,7 @@ const EZZY_LOGO_CANDIDATES = [
 const WEB_INVOICE_LOGO_CANDIDATES = [
   { file: path.join(/*turbopackIgnore: true*/ process.cwd(), "public", "invoice-assets", "web-invoice-logo.svg"), mime: "image/svg+xml" },
   { file: path.join(/*turbopackIgnore: true*/ process.cwd(), "public", "invoice-assets", "web-invoice-logo.png"), mime: "image/png" },
+  { file: path.join(/*turbopackIgnore: true*/ process.cwd(), "public", "invoice-assets", "web-invoice-logo.jpg"), mime: "image/jpeg" },
 ];
 
 function isNonEmptyString(value: unknown): value is string {
@@ -101,26 +102,57 @@ function parseEzzyInvoice(body: Record<string, unknown>): EzzyInvoiceData | null
   };
 }
 
+const WEB_INVOICE_REQUIRED_STRINGS = [
+  "businessName",
+  "invoiceNumber",
+  "date",
+  "paymentDue",
+  "clientCompanyName",
+  "clientAddressLines",
+  "contactEmail",
+  "contactTel",
+  "includedItems",
+  "monthlyUpdatesIncluded",
+  "afterFirstMonthNotes",
+  "bankName",
+  "bankAccountName",
+  "bankAccountNumber",
+] as const;
+
 function parseWebInvoice(body: Record<string, unknown>): WebInvoiceData | null {
   const lineItems = parseLineItems(body.lineItems);
   if (!lineItems) return null;
-  if (!isNonEmptyString(body.businessName) || !isNonEmptyString(body.date) || !isNonEmptyString(body.clientCompanyName)) {
-    return null;
+  for (const field of WEB_INVOICE_REQUIRED_STRINGS) {
+    if (!isNonEmptyString(body[field])) return null;
   }
   const taxRatePercent = Number(body.taxRatePercent ?? 0);
   if (!Number.isFinite(taxRatePercent)) return null;
+  const monthlyFee = Number(body.monthlyFee);
+  const depositAmount = Number(body.depositAmount);
+  const remainingAmount = Number(body.remainingAmount);
+  if (![monthlyFee, depositAmount, remainingAmount].every(Number.isFinite)) return null;
 
   return {
     businessName: body.businessName as string,
+    invoiceNumber: body.invoiceNumber as string,
     date: body.date as string,
+    paymentDue: body.paymentDue as string,
     clientCompanyName: body.clientCompanyName as string,
-    clientAddressLines: (body.clientAddressLines as string) ?? "",
+    clientAddressLines: body.clientAddressLines as string,
     lineItems,
     notes: (body.notes as string) ?? "",
     taxRatePercent,
-    contactEmail: (body.contactEmail as string) ?? "",
-    contactTel: (body.contactTel as string) ?? "",
-    paymentInfo: (body.paymentInfo as string) ?? "",
+    contactEmail: body.contactEmail as string,
+    contactTel: body.contactTel as string,
+    includedItems: body.includedItems as string,
+    monthlyFee,
+    monthlyUpdatesIncluded: body.monthlyUpdatesIncluded as string,
+    afterFirstMonthNotes: body.afterFirstMonthNotes as string,
+    depositAmount,
+    remainingAmount,
+    bankName: body.bankName as string,
+    bankAccountName: body.bankAccountName as string,
+    bankAccountNumber: body.bankAccountNumber as string,
   };
 }
 

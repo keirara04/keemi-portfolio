@@ -16,13 +16,28 @@ function todayIso() {
   return new Date().toISOString().slice(0, 10);
 }
 
-function defaultPaymentInfo(defaults: HakeemiDefaults) {
-  return [defaults.bankName, defaults.bankAccount, defaults.bankHolder].filter(Boolean).join("\n");
-}
+const REQUIRED_STRING_FIELDS = [
+  ["businessName", "Business name"],
+  ["invoiceNumber", "Invoice number"],
+  ["date", "Invoice date"],
+  ["paymentDue", "Payment due"],
+  ["clientCompanyName", "Client / business name"],
+  ["clientAddressLines", "Client contact information"],
+  ["contactEmail", "Email"],
+  ["contactTel", "Tel"],
+  ["includedItems", "Included"],
+  ["monthlyUpdatesIncluded", "Monthly updates included"],
+  ["afterFirstMonthNotes", "After-first-month notes"],
+  ["bankName", "Bank name"],
+  ["bankAccountName", "Account name"],
+  ["bankAccountNumber", "Account number"],
+] as const;
 
 export function WebInvoiceForm({ password, defaults }: { password: string; defaults: HakeemiDefaults }) {
   const [businessName, setBusinessName] = useState(defaults.businessName);
+  const [invoiceNumber, setInvoiceNumber] = useState("INV-001");
   const [date, setDate] = useState(todayIso());
+  const [paymentDue, setPaymentDue] = useState("");
   const [clientCompanyName, setClientCompanyName] = useState("");
   const [clientAddressLines, setClientAddressLines] = useState("");
   const [lineItems, setLineItems] = useState<LineItem[]>(() => [newLineItem()]);
@@ -30,7 +45,15 @@ export function WebInvoiceForm({ password, defaults }: { password: string; defau
   const [taxRatePercent, setTaxRatePercent] = useState(0);
   const [contactEmail, setContactEmail] = useState(defaults.email);
   const [contactTel, setContactTel] = useState(defaults.phone);
-  const [paymentInfo, setPaymentInfo] = useState(() => defaultPaymentInfo(defaults));
+  const [includedItems, setIncludedItems] = useState("");
+  const [monthlyFee, setMonthlyFee] = useState(0);
+  const [monthlyUpdatesIncluded, setMonthlyUpdatesIncluded] = useState("");
+  const [afterFirstMonthNotes, setAfterFirstMonthNotes] = useState("");
+  const [depositAmount, setDepositAmount] = useState(0);
+  const [remainingAmount, setRemainingAmount] = useState(0);
+  const [bankName, setBankName] = useState(defaults.bankName);
+  const [bankAccountName, setBankAccountName] = useState(defaults.bankHolder);
+  const [bankAccountNumber, setBankAccountNumber] = useState(defaults.bankAccount);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isPreviewing, setIsPreviewing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -39,7 +62,9 @@ export function WebInvoiceForm({ password, defaults }: { password: string; defau
 
   const buildInvoicePayload = () => ({
     businessName,
+    invoiceNumber,
     date,
+    paymentDue,
     clientCompanyName,
     clientAddressLines,
     lineItems,
@@ -47,10 +72,32 @@ export function WebInvoiceForm({ password, defaults }: { password: string; defau
     taxRatePercent,
     contactEmail,
     contactTel,
-    paymentInfo,
+    includedItems,
+    monthlyFee,
+    monthlyUpdatesIncluded,
+    afterFirstMonthNotes,
+    depositAmount,
+    remainingAmount,
+    bankName,
+    bankAccountName,
+    bankAccountNumber,
   });
 
+  const findMissingField = (): string | null => {
+    const payload = buildInvoicePayload() as Record<string, unknown>;
+    for (const [field, label] of REQUIRED_STRING_FIELDS) {
+      if (!String(payload[field] ?? "").trim()) return label;
+    }
+    if (lineItems.length === 0) return "At least one line item";
+    return null;
+  };
+
   const handleGenerate = async () => {
+    const missing = findMissingField();
+    if (missing) {
+      setError(`${missing} is required`);
+      return;
+    }
     setError(null);
     setIsGenerating(true);
     try {
@@ -63,6 +110,11 @@ export function WebInvoiceForm({ password, defaults }: { password: string; defau
   };
 
   const handlePreview = async () => {
+    const missing = findMissingField();
+    if (missing) {
+      setError(`${missing} is required`);
+      return;
+    }
     setError(null);
     setIsPreviewing(true);
     try {
@@ -82,14 +134,19 @@ export function WebInvoiceForm({ password, defaults }: { password: string; defau
       </div>
 
       <label>
-        <span className={labelClass}>Business Name (shown on logo)</span>
-        <input className={inputClass} value={businessName} onChange={(e) => setBusinessName(e.target.value)} />
+        <span className={labelClass}>Business Name (shown on logo) *</span>
+        <input required className={inputClass} value={businessName} onChange={(e) => setBusinessName(e.target.value)} />
       </label>
 
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         <label>
-          <span className={labelClass}>Date</span>
-          <input type="date" className={inputClass} value={date} onChange={(e) => setDate(e.target.value)} />
+          <span className={labelClass}>Invoice Number *</span>
+          <input
+            required
+            className={inputClass}
+            value={invoiceNumber}
+            onChange={(e) => setInvoiceNumber(e.target.value)}
+          />
         </label>
         <label>
           <span className={labelClass}>Tax %</span>
@@ -100,20 +157,36 @@ export function WebInvoiceForm({ password, defaults }: { password: string; defau
             onChange={(e) => setTaxRatePercent(Number(e.target.value) || 0)}
           />
         </label>
+        <label>
+          <span className={labelClass}>Invoice Date *</span>
+          <input required type="date" className={inputClass} value={date} onChange={(e) => setDate(e.target.value)} />
+        </label>
+        <label>
+          <span className={labelClass}>Payment Due *</span>
+          <input
+            required
+            className={inputClass}
+            placeholder="e.g. 14 days from invoice date"
+            value={paymentDue}
+            onChange={(e) => setPaymentDue(e.target.value)}
+          />
+        </label>
       </div>
 
       <div>
-        <p className={labelClass}>Bill To</p>
+        <p className={labelClass}>Bill To *</p>
         <div className="flex flex-col gap-2">
           <input
+            required
             className={inputClass}
             placeholder="Company / client name"
             value={clientCompanyName}
             onChange={(e) => setClientCompanyName(e.target.value)}
           />
           <textarea
+            required
             className={`${inputClass} min-h-16`}
-            placeholder="Address lines"
+            placeholder="Client contact information"
             value={clientAddressLines}
             onChange={(e) => setClientAddressLines(e.target.value)}
           />
@@ -121,7 +194,7 @@ export function WebInvoiceForm({ password, defaults }: { password: string; defau
       </div>
 
       <div>
-        <p className={labelClass}>Items</p>
+        <p className={labelClass}>Items *</p>
         <LineItemsEditor items={lineItems} onChange={setLineItems} />
       </div>
 
@@ -133,34 +206,118 @@ export function WebInvoiceForm({ password, defaults }: { password: string; defau
       <div className="rounded-lg bg-zinc-100 px-3 py-2 text-xs text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100">
         <div className="flex justify-between">
           <span>Tax</span>
-          <span>{totals.tax.toFixed(2)}</span>
+          <span>RM{totals.tax.toFixed(2)}</span>
         </div>
         <div className="flex justify-between font-semibold">
           <span>Total</span>
-          <span>{totals.total.toFixed(2)}</span>
+          <span>RM{totals.total.toFixed(2)}</span>
+        </div>
+      </div>
+
+      <label>
+        <span className={labelClass}>Included (one per line) *</span>
+        <textarea
+          required
+          className={`${inputClass} min-h-24`}
+          placeholder={"Initial upload of up to 15 products\nDomain registration for one year\n..."}
+          value={includedItems}
+          onChange={(e) => setIncludedItems(e.target.value)}
+        />
+      </label>
+
+      <div>
+        <p className={labelClass}>After the First Month *</p>
+        <div className="flex flex-col gap-2">
+          <label>
+            <span className={labelClass}>Monthly Fee (RM) *</span>
+            <input
+              required
+              type="number"
+              className={inputClass}
+              value={monthlyFee === 0 ? "" : monthlyFee}
+              onChange={(e) => setMonthlyFee(Number(e.target.value) || 0)}
+            />
+          </label>
+          <input
+            required
+            className={inputClass}
+            placeholder="e.g. Includes up to six product, photo, price or promotion updates monthly"
+            value={monthlyUpdatesIncluded}
+            onChange={(e) => setMonthlyUpdatesIncluded(e.target.value)}
+          />
+          <textarea
+            required
+            className={`${inputClass} min-h-16`}
+            placeholder={"Additional third-party subscription charges require client approval\nMajor features, redesigns and integrations are quoted separately"}
+            value={afterFirstMonthNotes}
+            onChange={(e) => setAfterFirstMonthNotes(e.target.value)}
+          />
         </div>
       </div>
 
       <div>
-        <p className={labelClass}>Contact & Payment</p>
+        <p className={labelClass}>Payment Schedule *</p>
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+          <label>
+            <span className={labelClass}>Deposit (RM) *</span>
+            <input
+              required
+              type="number"
+              className={inputClass}
+              value={depositAmount === 0 ? "" : depositAmount}
+              onChange={(e) => setDepositAmount(Number(e.target.value) || 0)}
+            />
+          </label>
+          <label>
+            <span className={labelClass}>Remaining before launch (RM) *</span>
+            <input
+              required
+              type="number"
+              className={inputClass}
+              value={remainingAmount === 0 ? "" : remainingAmount}
+              onChange={(e) => setRemainingAmount(Number(e.target.value) || 0)}
+            />
+          </label>
+        </div>
+      </div>
+
+      <div>
+        <p className={labelClass}>Contact & Payment *</p>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           <input
+            required
             className={inputClass}
             placeholder="Email"
             value={contactEmail}
             onChange={(e) => setContactEmail(e.target.value)}
           />
           <input
+            required
             className={inputClass}
             placeholder="Tel"
             value={contactTel}
             onChange={(e) => setContactTel(e.target.value)}
           />
-          <textarea
-            className={`${inputClass} col-span-2 min-h-16`}
-            placeholder="Payment info"
-            value={paymentInfo}
-            onChange={(e) => setPaymentInfo(e.target.value)}
+          <input
+            required
+            className={inputClass}
+            placeholder="Bank name"
+            value={bankName}
+            onChange={(e) => setBankName(e.target.value)}
+          />
+          <input
+            required
+            className={inputClass}
+            placeholder="Account name"
+            value={bankAccountName}
+            onChange={(e) => setBankAccountName(e.target.value)}
+          />
+          <input
+            required
+            className={`${inputClass} col-span-2`}
+            placeholder="Account number"
+            value={bankAccountNumber}
+            onChange={(e) => setBankAccountNumber(e.target.value)}
           />
         </div>
       </div>

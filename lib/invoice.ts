@@ -54,7 +54,9 @@ export type EzzyInvoiceData = {
 
 export type WebInvoiceData = {
   businessName: string;
+  invoiceNumber: string;
   date: string;
+  paymentDue: string;
   clientCompanyName: string;
   clientAddressLines: string;
   lineItems: LineItem[];
@@ -62,7 +64,15 @@ export type WebInvoiceData = {
   taxRatePercent: number;
   contactEmail: string;
   contactTel: string;
-  paymentInfo: string;
+  includedItems: string;
+  monthlyFee: number;
+  monthlyUpdatesIncluded: string;
+  afterFirstMonthNotes: string;
+  depositAmount: number;
+  remainingAmount: number;
+  bankName: string;
+  bankAccountName: string;
+  bankAccountNumber: string;
 };
 
 export type HakeemiInvoiceType = "tour" | "web";
